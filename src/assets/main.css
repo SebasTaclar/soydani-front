@@ -1,40 +1,41 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import './styles/global.css';
+@import './styles/modern-ecommerce.css';
 
 :root {
-/*
-  /* soydanirodriguezz Brand Colors */
-  --primary-blue: #005eb4;      /* Barra de módulos */
-  --secondary-blue: #3c9af0;    /* Azul claro */
-  --tertiary-blue: #004096;     /* Azul medio */
-  --dark-blue: #002b60;         /* Azul oscuro */
-  --white: #ffffff;             /* Blanco */
+  /* SOYDANI Brand Colors - Rojo, Negro, Blanco */
+  --primary-red: #DC2626;        /* Rojo principal */
+  --secondary-red: #EF4444;      /* Rojo claro */
+  --tertiary-red: #B91C1C;       /* Rojo medio */
+  --dark-red: #991B1B;           /* Rojo oscuro */
+  --black: #000000;              /* Negro */
+  --white: #ffffff;              /* Blanco */
 
   /* Legacy support for existing components */
-  --primary-color: var(--primary-blue);
-  --primary-color-dark: var(--dark-blue);
-  --primary-color-light: var(--secondary-blue);
-  --accent-color: var(--secondary-blue);
-  --accent-color-dark: var(--tertiary-blue);
+  --primary-color: var(--primary-red);
+  --primary-color-dark: var(--dark-red);
+  --primary-color-light: var(--secondary-red);
+  --accent-color: var(--primary-red);
+  --accent-color-dark: var(--tertiary-red);
   --accent-color-light: var(--white);
 
   /* Brand Color with Alpha */
-  --primary-color-alpha-30: rgba(0, 94, 180, 0.3);
-  --primary-color-alpha-40: rgba(0, 94, 180, 0.4);
-  --primary-color-alpha-60: rgba(0, 94, 180, 0.6);
-  --primary-color-alpha-80: rgba(0, 94, 180, 0.8);
+  --primary-color-alpha-30: rgba(220, 38, 38, 0.3);
+  --primary-color-alpha-40: rgba(220, 38, 38, 0.4);
+  --primary-color-alpha-60: rgba(220, 38, 38, 0.6);
+  --primary-color-alpha-80: rgba(220, 38, 38, 0.8);
 
   /* Secondary Color with Alpha */
-  --secondary-color-alpha-30: rgba(60, 154, 240, 0.3);
-  --secondary-color-alpha-40: rgba(60, 154, 240, 0.4);
-  --secondary-color-alpha-60: rgba(60, 154, 240, 0.6);
-  --secondary-color-alpha-80: rgba(60, 154, 240, 0.8);
+  --secondary-color-alpha-30: rgba(239, 68, 68, 0.3);
+  --secondary-color-alpha-40: rgba(239, 68, 68, 0.4);
+  --secondary-color-alpha-60: rgba(239, 68, 68, 0.6);
+  --secondary-color-alpha-80: rgba(239, 68, 68, 0.8);
 
   /* Gradients */
-  --primary-gradient: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
-  --primary-gradient-hover: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-blue) 100%);
-  --secondary-gradient: linear-gradient(135deg, var(--secondary-blue) 0%, var(--primary-blue) 100%);
-  --secondary-gradient-hover: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+  --primary-gradient: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
+  --primary-gradient-hover: linear-gradient(135deg, var(--dark-red) 0%, var(--primary-red) 100%);
+  --secondary-gradient: linear-gradient(135deg, var(--secondary-red) 0%, var(--primary-red) 100%);
+  --secondary-gradient-hover: linear-gradient(135deg, var(--primary-red) 0%, var(--secondary-red) 100%);
 
   /* Typography */
   --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -46,8 +47,8 @@
   --bg-color: #000000;
   --text-color: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.9);
-  --border-color: rgba(255, 255, 255, 0.2);
-  --card-bg: rgba(255, 255, 255, 0.1);
+  --border-color: rgba(220, 38, 38, 0.3);
+  --card-bg: rgba(20, 20, 20, 0.9);
   --card-hover-bg: rgba(255, 255, 255, 0.15);
 }
 

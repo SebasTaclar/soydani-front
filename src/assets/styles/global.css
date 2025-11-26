@@ -1,30 +1,29 @@
-/* soydanirodriguezz - Paleta de colores centralizada */
+/* SOYDANI - Paleta de colores Rojo, Negro, Blanco */
 :root {
-  /* Colores principales - Nuevo azul */
-  --primary-blue: #1976d2;      /* Azul principal más moderno */
-  --secondary-blue: #42a5f5;    /* Azul claro */
-  --tertiary-blue: #1565c0;     /* Azul medio */
-  --dark-blue: #0d47a1;         /* Azul oscuro */
+  /* Colores principales - Rojo, Negro, Blanco */
+  --primary-red: #DC2626;       /* Rojo principal */
+  --secondary-red: #EF4444;     /* Rojo claro */
+  --tertiary-red: #B91C1C;      /* Rojo medio */
+  --dark-red: #991B1B;          /* Rojo oscuro */
   --white: #ffffff;             /* Blanco */
   --black: #000000;             /* Negro puro */
 
-  /* Paleta de marca derivada del logo negro */
-  /* Ajusta estos valores según el logo final (ej: si el acento es diferente) */
-  --brand-primary: #000000;            /* Color dominante (logo negro) */
-  --brand-primary-contrast: #ffffff;   /* Texto sobre superficies negras */
-  --brand-bg-start: #0a0a0a;           /* Degradado de fondo inicio */
-  --brand-bg-end: #1d1f23;             /* Degradado de fondo fin */
-  --brand-surface: #141618;            /* Superficie cards/nav */
-  --brand-border: #2a2d31;             /* Bordes sutiles */
-  --brand-accent: #3b82f6;             /* Acento (azul eléctrico) */
-  --brand-accent-alt: #60a5fa;         /* Acento claro */
-  --brand-accent-glow: rgba(96,165,250,0.5);
+  /* Paleta de marca SOYDANI */
+  --brand-primary: #DC2626;            /* Rojo principal */
+  --brand-primary-contrast: #ffffff;   /* Texto sobre superficies rojas */
+  --brand-bg-start: #000000;           /* Negro puro inicio */
+  --brand-bg-end: #1a1a1a;             /* Gris muy oscuro fin */
+  --brand-surface: #0a0a0a;            /* Superficie cards/nav */
+  --brand-border: rgba(220, 38, 38, 0.3); /* Bordes rojos sutiles */
+  --brand-accent: #DC2626;             /* Acento rojo */
+  --brand-accent-alt: #EF4444;         /* Acento rojo claro */
+  --brand-accent-glow: rgba(220, 38, 38, 0.5);
   --brand-gradient: linear-gradient(135deg, var(--brand-bg-start) 0%, var(--brand-bg-end) 100%);
   --brand-accent-gradient: linear-gradient(135deg, var(--brand-accent) 0%, var(--brand-accent-alt) 100%);
   --brand-danger: #ef4444;
   --brand-success: #10b981;
   --brand-warning: #f59e0b;
-  --brand-info: #3b82f6;
+  --brand-info: #DC2626;
 
   /* Colores adicionales */
   --light-gray: #f5f5f5;
@@ -34,24 +33,31 @@
   /* Colores de estado */
   --success: #4caf50;
   --warning: #ff9800;
-  --danger: #f44336;
-  --info: var(--secondary-blue);
+  --danger: #DC2626;
+  --info: var(--secondary-red);
 
-  /* Sombras */
-  --shadow-light: 0 2px 4px rgba(25, 118, 210, 0.1);
-  --shadow-medium: 0 4px 8px rgba(25, 118, 210, 0.15);
-  --shadow-heavy: 0 8px 16px rgba(25, 118, 210, 0.2);
+  /* Sombras modernas con efecto depth */
+  --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(220, 38, 38, 0.1);
+  --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(220, 38, 38, 0.15);
+  --shadow-heavy: 0 12px 32px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(220, 38, 38, 0.2);
+  --shadow-hover: 0 16px 48px rgba(220, 38, 38, 0.25), 0 8px 24px rgba(0, 0, 0, 0.2);
 
-  /* Bordes redondeados */
-  --border-radius-sm: 4px;
-  --border-radius-md: 8px;
-  --border-radius-lg: 12px;
-  --border-radius-xl: 20px;
+  /* Bordes redondeados modernos */
+  --border-radius-sm: 6px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 24px;
+  --border-radius-full: 9999px;
 
-  /* Transiciones */
-  --transition-fast: 0.2s ease;
-  --transition-normal: 0.3s ease;
-  --transition-slow: 0.5s ease;
+  /* Transiciones suaves */
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* Efectos de producto cards */
+  --card-hover-lift: translateY(-8px);
+  --card-hover-scale: scale(1.03);
 
   /* Variables centralizadas para tema claro */
   --app-bg-primary: var(--white);
@@ -59,7 +65,7 @@
   --app-text-primary: var(--black);
   --app-text-secondary: var(--dark-gray);
   --app-border-color: #e0e0e0;
-  --app-hover-bg: rgba(25, 118, 210, 0.05);
+  --app-hover-bg: rgba(220, 38, 38, 0.05);
   --app-input-bg: var(--white);
   --app-table-header-bg: var(--light-gray);
   --app-shadow: var(--shadow-light);
@@ -69,19 +75,19 @@
   --app-text-muted: var(--medium-gray);
   --app-surface-elevated: var(--white);
   --app-border-light: #e0e0e0;
-  --app-accent-text: var(--primary-blue);
+  --app-accent-text: var(--primary-red);
 
   /* Variables específicas para componentes */
   --app-surface: var(--white);
   --app-border: #e0e0e0;
-  --app-primary: var(--primary-blue);
-  --app-primary-dark: var(--dark-blue);
-  --app-primary-light: var(--secondary-blue);
-  --app-accent: #ff5722;
+  --app-primary: var(--primary-red);
+  --app-primary-dark: var(--dark-red);
+  --app-primary-light: var(--secondary-red);
+  --app-accent: #DC2626;
   --app-success: #4caf50;
   --app-warning: #ff9800;
-  --app-error: #f44336;
-  --app-info: #2196f3;
+  --app-error: #DC2626;
+  --app-info: #DC2626;
 }
 
 /* Modo Oscuro */
@@ -90,11 +96,11 @@
   --app-bg-secondary: #121212;
   --app-text-primary: var(--white);
   --app-text-secondary: rgba(255, 255, 255, 0.87);
-  --app-border-color: rgba(255, 255, 255, 0.12);
-  --app-hover-bg: rgba(25, 118, 210, 0.08);
+  --app-border-color: rgba(220, 38, 38, 0.3);
+  --app-hover-bg: rgba(220, 38, 38, 0.08);
   --app-input-bg: rgba(255, 255, 255, 0.05);
   --app-table-header-bg: rgba(255, 255, 255, 0.05);
-  --app-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  --app-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 
   /* Variables adicionales para mejor contraste en modo oscuro */
   --app-text-on-surface: var(--white);
@@ -197,6 +203,156 @@ body {
   background: var(--app-table-header-bg);
   color: var(--app-text-primary);
   border-bottom: 1px solid var(--app-border-color);
+}
+
+/* Estilos modernos para product cards */
+.product-card-modern {
+  position: relative;
+  background: var(--white);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-light);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.product-card-modern:hover {
+  transform: var(--card-hover-lift);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--primary-red);
+}
+
+.product-card-modern .product-image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--light-gray);
+}
+
+.product-card-modern .product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.product-card-modern:hover .product-image img {
+  transform: scale(1.08);
+}
+
+.product-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: var(--primary-red);
+  color: var(--white);
+  padding: 6px 12px;
+  border-radius: var(--border-radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  z-index: 2;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.product-info-modern {
+  padding: 1.25rem;
+}
+
+.product-title-modern {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--black);
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.product-price-modern {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.price-current {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-red);
+}
+
+.price-original {
+  font-size: 1rem;
+  color: var(--medium-gray);
+  text-decoration: line-through;
+}
+
+.discount-badge {
+  background: var(--brand-success);
+  color: var(--white);
+  padding: 4px 8px;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Botones modernos estilo e-commerce */
+.btn-modern {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border-radius: var(--border-radius-full);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary-modern {
+  background: var(--primary-red);
+  color: var(--white);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+}
+
+.btn-primary-modern:hover {
+  background: var(--dark-red);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.35);
+}
+
+.btn-secondary-modern {
+  background: var(--black);
+  color: var(--white);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-secondary-modern:hover {
+  background: #1a1a1a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.btn-outline-modern {
+  background: transparent;
+  color: var(--black);
+  border: 2px solid var(--black);
+}
+
+.btn-outline-modern:hover {
+  background: var(--black);
+  color: var(--white);
+  transform: translateY(-2px);
 }
 
 .table-base td {

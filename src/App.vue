@@ -4,21 +4,27 @@
       <!-- Logo y marca -->
       <RouterLink class="link-navbar home" to="/" @click="closeMobileMenu">
         <div class="brand-container">
-          <img src="/images/Logo1.jpeg" alt="Logo" class="brand-logo" />
+          <div class="creative-logo">
+            <div class="logo-circle">
+              <span class="logo-letter">S</span>
+              <span class="logo-letter">D</span>
+            </div>
+            <div class="logo-glow"></div>
+          </div>
           <div class="brand-info">
-            <div class="brand-title">APPLE STORE <span class="highlight">PRO</span></div>
+            <div class="brand-title"><span class="highlight">SOYDANI</span></div>
+            <div class="brand-tagline">Tu tienda virtual</div>
           </div>
         </div>
       </RouterLink>
 
       <!-- Navegación principal -->
       <div class="nav-menu desktop-nav">
-        <RouterLink to="/iphone" class="nav-link" :class="{ active: isCurrentRoute('/iphone') }" @click="closeMobileMenu">iPhone</RouterLink>
-        <RouterLink to="/mac" class="nav-link" :class="{ active: isCurrentRoute('/mac') }" @click="closeMobileMenu">Mac</RouterLink>
-        <RouterLink to="/ipad" class="nav-link" :class="{ active: isCurrentRoute('/ipad') }" @click="closeMobileMenu">iPad</RouterLink>
-        <RouterLink to="/watch" class="nav-link" :class="{ active: isCurrentRoute('/watch') }" @click="closeMobileMenu">Watch</RouterLink>
-        <RouterLink to="/airpods" class="nav-link" :class="{ active: isCurrentRoute('/airpods') }" @click="closeMobileMenu">AirPods</RouterLink>
-        <RouterLink to="/accesorios" class="nav-link" :class="{ active: isCurrentRoute('/accesorios') }" @click="closeMobileMenu">Accesorios</RouterLink>
+        <RouterLink to="/iphone" class="nav-link" :class="{ active: isCurrentRoute('/iphone') }" @click="closeMobileMenu">Tecnología</RouterLink>
+        <RouterLink to="/mac" class="nav-link" :class="{ active: isCurrentRoute('/mac') }" @click="closeMobileMenu">Navidad</RouterLink>
+        <RouterLink to="/ipad" class="nav-link" :class="{ active: isCurrentRoute('/ipad') }" @click="closeMobileMenu">Hogar</RouterLink>
+        <RouterLink to="/watch" class="nav-link" :class="{ active: isCurrentRoute('/watch') }" @click="closeMobileMenu">Ofertas</RouterLink>
+        <RouterLink to="/airpods" class="nav-link" :class="{ active: isCurrentRoute('/airpods') }" @click="closeMobileMenu">Destacados</RouterLink>
         <!-- <a href="#products" class="nav-link" @click="closeMobileMenu(); scrollToProductStore()">Compra Ahora</a>
         <a href="#contact" class="nav-link" @click="closeMobileMenu(); scrollToContact()">Contáctanos</a> -->
       </div>
@@ -44,12 +50,12 @@
       <div class="mobile-menu" :class="{ 'active': isMobileMenuOpen }">
         <div class="mobile-menu-content">
           <div class="mobile-nav-links">
-            <RouterLink to="/iphone" class="mobile-link" :class="{ active: isCurrentRoute('/iphone') }" @click="closeMobileMenu">iPhone</RouterLink>
-            <RouterLink to="/mac" class="mobile-link" :class="{ active: isCurrentRoute('/mac') }" @click="closeMobileMenu">Mac</RouterLink>
-            <RouterLink to="/ipad" class="mobile-link" :class="{ active: isCurrentRoute('/ipad') }" @click="closeMobileMenu">iPad</RouterLink>
-            <RouterLink to="/watch" class="mobile-link" :class="{ active: isCurrentRoute('/watch') }" @click="closeMobileMenu">Watch</RouterLink>
-            <RouterLink to="/airpods" class="mobile-link" :class="{ active: isCurrentRoute('/airpods') }" @click="closeMobileMenu">AirPods</RouterLink>
-            <RouterLink to="/accesorios" class="mobile-link" :class="{ active: isCurrentRoute('/accesorios') }" @click="closeMobileMenu">Accesorios</RouterLink>
+            <RouterLink to="/iphone" class="mobile-link" :class="{ active: isCurrentRoute('/iphone') }" @click="closeMobileMenu">Tecnología</RouterLink>
+            <RouterLink to="/mac" class="mobile-link" :class="{ active: isCurrentRoute('/mac') }" @click="closeMobileMenu">Navidad</RouterLink>
+            <RouterLink to="/ipad" class="mobile-link" :class="{ active: isCurrentRoute('/ipad') }" @click="closeMobileMenu">Hogar</RouterLink>
+            <RouterLink to="/watch" class="mobile-link" :class="{ active: isCurrentRoute('/watch') }" @click="closeMobileMenu">Ofertas</RouterLink>
+            <RouterLink to="/airpods" class="mobile-link" :class="{ active: isCurrentRoute('/airpods') }" @click="closeMobileMenu">Destacados</RouterLink>
+            <RouterLink to="/accesorios" class="mobile-link" :class="{ active: isCurrentRoute('/accesorios') }" @click="closeMobileMenu">Todos</RouterLink>
             <!-- <a href="#products" class="mobile-link" @click="closeMobileMenu(); scrollToProductStore()">Compra Ahora</a>
             <a href="#contact" class="mobile-link" @click="closeMobileMenu(); scrollToContact()">Contáctanos</a> -->
           </div>
@@ -167,7 +173,7 @@ watch(route, () => {
 
 <style scoped>
 .navbar {
-  background: var(--brand-gradient);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.9) 100%);
   margin: 0;
   width: 100%;
   display: flex;
@@ -177,10 +183,11 @@ watch(route, () => {
   top: 0;
   left: 0;
   z-index: 1000;
-  height: 70px;
-  padding: 0 30px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
+  height: 75px;
+  padding: 0 clamp(20px, 5vw, 60px);
+  box-shadow: 0 2px 24px rgba(220, 38, 38, 0.15), 0 1px 3px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(220, 38, 38, 0.2);
 }
 
 /* Logo y marca */
@@ -190,55 +197,126 @@ watch(route, () => {
   gap: 12px;
 }
 
-.brand-logo {
-  width: 48px;
-  height: 48px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 2px solid var(--brand-accent-alt);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1);
-  transition: all 0.3s ease;
-}
-
-.brand-logo:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3), 0 0 0 1px var(--brand-accent);
+/* Logo creativo */
+.creative-logo {
+  position: relative;
+  width: 50px;
+  height: 50px;
 }
 
 .logo-circle {
   width: 50px;
   height: 50px;
-  background: var(--brand-accent-gradient);
+  background: linear-gradient(135deg, var(--primary-red) 0%, #a10000 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  box-shadow: 0 4px 15px var(--brand-accent-glow);
+  position: relative;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5),
+              0 0 30px rgba(220, 38, 38, 0.3),
+              inset 0 2px 8px rgba(255, 255, 255, 0.2);
+  animation: logoFloat 4s ease-in-out infinite;
   transition: all 0.3s ease;
 }
 
-.logo-circle:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px var(--brand-accent-glow);
+.logo-circle::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  background: linear-gradient(135deg, var(--primary-red) 0%, #a10000 100%);
+  border-radius: 50%;
+  z-index: 0;
 }
+
+.logo-circle::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.8) 0%, rgba(161, 0, 0, 0.9) 100%);
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.logo-letter {
+  position: relative;
+  z-index: 2;
+  font-weight: 900;
+  font-size: 14px;
+  color: var(--white);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5),
+               0 0 20px rgba(255, 255, 255, 0.3);
+  letter-spacing: -1px;
+}
+
+.logo-letter:first-child::after {
+  content: '•';
+  margin: 0 1px;
+  font-size: 8px;
+  opacity: 0.6;
+}
+
+.logo-glow {
+  position: absolute;
+  inset: -10px;
+  background: radial-gradient(circle, rgba(220, 38, 38, 0.4) 0%, transparent 70%);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.creative-logo:hover .logo-circle {
+  transform: scale(1.08);
+  box-shadow: 0 8px 24px rgba(220, 38, 38, 0.6),
+              0 0 40px rgba(220, 38, 38, 0.4),
+              inset 0 2px 12px rgba(255, 255, 255, 0.3);
+}
+
+.creative-logo:hover .logo-glow {
+  opacity: 1;
+}
+
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-4px) rotate(2deg); }
+}
+
+
 
 .brand-info {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  gap: 2px;
 }
 
 .brand-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--brand-primary-contrast);
-  line-height: 1.2;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1;
   margin: 0;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
 }
 
 .brand-title .highlight {
-  color: #26F7D7;
+  background: linear-gradient(135deg, var(--white) 0%, var(--primary-red) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+  filter: drop-shadow(0 2px 8px rgba(220, 38, 38, 0.3));
+}
+
+.brand-tagline {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .brand-subtitle {
@@ -259,20 +337,46 @@ watch(route, () => {
 }
 
 .nav-link {
-  color: var(--brand-accent-alt);
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
-  font-weight: 500;
-  font-size: 16px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  letter-spacing: 0.3px;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--primary-red);
+  transition: width 0.3s ease;
 }
 
 .nav-link:hover {
-  color: var(--brand-primary-contrast);
-  background-color: rgba(255, 255, 255, 0.08);
-  transform: translateY(-1px);
+  color: var(--white);
+  background-color: rgba(220, 38, 38, 0.1);
+  transform: translateY(-2px);
+}
+
+.nav-link:hover::after {
+  width: 70%;
+}
+
+.nav-link.active {
+  color: var(--primary-red);
+  background: rgba(220, 38, 38, 0.15);
+}
+
+.nav-link.active::after {
+  width: 70%;
 }
 
 .share-btn {
@@ -310,15 +414,18 @@ watch(route, () => {
 }
 
 .access-btn {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
   color: #ffffff;
-  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.35);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .access-btn:hover {
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.5);
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, var(--dark-red) 0%, var(--tertiary-red) 100%);
+  box-shadow: 0 6px 24px rgba(220, 38, 38, 0.5);
+  transform: translateY(-3px);
 }
 
 .logout-btn {
@@ -334,15 +441,18 @@ watch(route, () => {
 }
 
 .admin-btn {
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-  color: #ffffff;
-  box-shadow: 0 2px 10px rgba(6, 182, 212, 0.3);
+  background: linear-gradient(135deg, var(--black) 0%, #1a1a1a 100%);
+  color: var(--primary-red);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  font-weight: 700;
 }
 
 .admin-btn:hover {
-  background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
-  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.5);
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, #1a1a1a 0%, var(--black) 100%);
+  box-shadow: 0 6px 24px rgba(220, 38, 38, 0.4);
+  transform: translateY(-3px);
+  border-color: var(--primary-red);
 }
 
 .purchases-btn {
@@ -359,13 +469,15 @@ watch(route, () => {
 }
 
 .user-greeting {
-  color: var(--brand-accent-alt);
-  font-weight: 600;
+  color: var(--white);
+  font-weight: 700;
   font-size: 14px;
-  padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
+  padding: 10px 16px;
+  background: rgba(220, 38, 38, 0.15);
+  border-radius: 12px;
   backdrop-filter: blur(10px);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  letter-spacing: 0.3px;
 }
 
 /* Menu hamburguesa */

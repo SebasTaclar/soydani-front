@@ -73,31 +73,47 @@ const currentSlide = ref(0)
 const autoPlayInterval = ref<ReturnType<typeof setInterval> | null>(null)
 const isPlaying = ref(true)
 
-// Datos de productos Apple (fácil de expandir)
+// Datos de categorías SOYDANI
 const slides = ref<ProductSlide[]>([
   {
-    id: 'iphone',
-    image: '/images/banner1.jpg',
-    category: 'iPhone',
-    title: 'iPhone 15 Pro',
-    description: 'El iPhone más Pro hasta ahora. Con titanio de grado aeroespacial y el chip A17 Pro más potente.',
-    features: ['Titanio', 'Cámara 48MP', 'USB-C', 'Action Button']
+    id: 'black-week',
+    image: 'https://images.unsplash.com/photo-1607083206968-13611e3d76db?w=1920&h=1080&fit=crop&q=80',
+    category: 'Black Week',
+    title: '⚡ BLACK WEEK - Hasta 50% OFF',
+    description: '¡Ofertas increíbles! Descuentos masivos en tecnología, hogar y más. ¡No te lo pierdas!',
+    features: ['Hasta 50% OFF', 'ENVÍO GRATIS', 'Compra Local', 'Stock Limitado']
   },
   {
-    id: 'ipad',
-    image: '/images/banner4.jpg',
-    category: 'iPad',
-    title: 'iPad Pro M2',
-    description: 'Versatilidad extrema con el poder del chip M2. Diseño delgado y potencia profesional.',
-    features: ['M2 Chip', 'Liquid Retina XDR', 'Apple Pencil 2', 'Thunderbolt / USB 4']
+    id: 'tecnologia',
+    image: 'https://images.unsplash.com/photo-1601524909162-ae8725290836?w=1920&h=1080&fit=crop&q=80',
+    category: 'Tecnología',
+    title: '📱 Tecnología de Última Generación',
+    description: 'Los mejores smartphones, laptops y gadgets. Garantía oficial y precios increíbles.',
+    features: ['Últimos Modelos', 'Garantía Oficial', 'Envío Gratis', 'Mejor Precio']
   },
   {
-    id: 'macbook',
-    image: '/images/banner3.jpg',
-    category: 'Mac',
-    title: 'MacBook Pro M3',
-    description: 'Potencia profesional redefinida. Rendimiento extraordinario para los flujos de trabajo más exigentes.',
-    features: ['Chip M3', '22h batería', 'Pantalla Liquid Retina XDR', 'Thunderbolt 4']
+    id: 'navidad',
+    image: 'https://images.unsplash.com/photo-1543589077-47d81606c1bf?w=1920&h=1080&fit=crop&q=80',
+    category: 'Navidad',
+    title: '🎄 Especial Navideño',
+    description: 'Decora tu hogar esta Navidad. Luces, árboles, adornos y todo para celebrar en grande.',
+    features: ['Decoración Premium', 'Luces LED', 'Ofertas Navideñas', 'Envío Rápido']
+  },
+  {
+    id: 'hogar',
+    image: 'https://images.unsplash.com/photo-1615529182904-14819c35db37?w=1920&h=1080&fit=crop&q=80',
+    category: 'Hogar',
+    title: '🏠 Renueva Tu Hogar',
+    description: 'Artículos de hogar con estilo. Decoración moderna, organización y confort para cada espacio.',
+    features: ['Diseños Modernos', 'Calidad Premium', 'Variedad', 'Mejores Precios']
+  },
+  {
+    id: 'ofertas',
+    image: 'https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?w=1920&h=1080&fit=crop&q=80',
+    category: 'Ofertas',
+    title: '🔥 OFERTAS IMPERDIBLES',
+    description: '¡Aprovecha ahora! Productos seleccionados con descuentos brutales. Solo por tiempo limitado.',
+    features: ['Descuentos Brutales', 'Entrega Inmediata', '100% Garantizado', 'Compra YA']
   }
 ])
 
@@ -193,16 +209,16 @@ defineExpose({
 </script>
 
 <style scoped>
-/* === CARRUSEL INNOVADOR APPLE STORE PRO === */
+/* === CARRUSEL MODERNO SOYDANI === */
 .hero-carousel {
   position: relative;
   width: 100%;
-  height: 80vh;
-  min-height: 600px;
+  height: 85vh;
+  min-height: 650px;
   overflow: hidden;
   border-radius: 0;
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
-  background: #000;
+  box-shadow: 0 20px 60px rgba(220, 38, 38, 0.15), 0 0 100px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(180deg, #000000 0%, #0a0a0a 100%);
 }
 
 /* Contenedor del Carrusel */
@@ -238,7 +254,7 @@ defineExpose({
   opacity: 0.7;
 }
 
-/* Overlay simplificado */
+/* Overlay con acento rojo SOYDANI */
 .slide-overlay {
   position: absolute;
   top: 0;
@@ -247,9 +263,9 @@ defineExpose({
   height: 100%;
   background: linear-gradient(
     135deg,
-    rgba(0, 0, 0, 0.2) 0%,
-    rgba(0, 0, 0, 0.05) 40%,
-    rgba(0, 0, 0, 0.15) 100%
+    rgba(0, 0, 0, 0.4) 0%,
+    rgba(220, 38, 38, 0.1) 40%,
+    rgba(0, 0, 0, 0.3) 100%
   );
   z-index: 3;
 }
@@ -263,30 +279,47 @@ defineExpose({
 }
 
 .btn-explore {
-  background: linear-gradient(135deg, #1f2937, #374151);
+  background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
   color: white;
   border: 2px solid rgba(255, 255, 255, 0.2);
-  padding: 1rem 2.5rem;
-  border-radius: 16px;
-  font-size: 1rem;
-  font-weight: 600;
+  padding: 1.25rem 3rem;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 700;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  transition: all 0.4s ease;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  gap: 0.75rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 12px 40px rgba(220, 38, 38, 0.4), 0 0 60px rgba(220, 38, 38, 0.2);
   backdrop-filter: blur(20px);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-explore::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.btn-explore:hover::before {
+  left: 100%;
 }
 
 .btn-explore:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
-  background: linear-gradient(135deg, #374151, #4b5563);
-  border-color: rgba(255, 255, 255, 0.3);
-  scale: 1.05;
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px rgba(220, 38, 38, 0.6), 0 0 80px rgba(220, 38, 38, 0.3);
+  background: linear-gradient(135deg, var(--secondary-red), var(--primary-red));
+  border-color: rgba(255, 255, 255, 0.4);
+  scale: 1.08;
 }
 
 /* Navegación */
