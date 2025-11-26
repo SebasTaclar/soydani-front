@@ -14,27 +14,25 @@
         <section class="terms-section">
           <h2>1. Información General</h2>
           <p>
-            Bienvenido a Apple Store Pro. Al acceder y realizar compras en nuestra plataforma, aceptas cumplir con estos términos y condiciones.
-            Apple Store Pro es una tienda en línea especializada en la venta de productos Apple y tecnología premium.
+            Bienvenido a SOYDANI. Al acceder y realizar compras en nuestra plataforma, aceptas cumplir con estos términos y condiciones.
+            SOYDANI es una tienda en línea especializada en la venta de tecnología, decoración navideña y artículos del hogar.
           </p>
         </section>
 
         <section class="terms-section">
           <h2>2. Productos y Servicios</h2>
           <p>
-            Ofrecemos una variedad de productos Apple y accesorios que incluyen:
+            Ofrecemos una variedad de productos en tres categorías principales:
           </p>
           <ul>
-            <li>iPhone (todos los modelos y generaciones)</li>
-            <li>Mac (MacBook Air, MacBook Pro, iMac, Mac mini, Mac Studio)</li>
-            <li>iPad (iPad Pro, iPad Air, iPad, iPad mini)</li>
-            <li>Apple Watch (Series, SE, Ultra)</li>
-            <li>Accesorios oficiales Apple (AirPods, Apple Pencil, Magic Keyboard, cargadores, fundas)</li>
+            <li>Tecnología: Dispositivos electrónicos, accesorios, gadgets y equipos tecnológicos</li>
+            <li>Navidad: Decoración navideña, árboles, luces, adornos y artículos festivos</li>
+            <li>Hogar: Artículos para el hogar, decoración, organizadores y accesorios domésticos</li>
             <li>Productos con múltiples opciones de colores y configuraciones</li>
           </ul>
           <p>
             Nos reservamos el derecho de modificar, discontinuar o actualizar cualquier producto sin previo aviso.
-            Las imágenes y descripciones de los productos son representativas. Todos los productos Apple son originales y cuentan con garantía oficial.
+            Las imágenes y descripciones de los productos son representativas. Todos los productos cuentan con garantía según especificaciones del fabricante.
           </p>
         </section>
 
@@ -92,8 +90,8 @@
         <section class="terms-section">
           <h2>6. Garantía</h2>
           <p>
-            Todos nuestros productos Apple cuentan con garantía oficial del fabricante contra defectos de fabricación.
-            La garantía estándar de Apple cubre 1 año desde la fecha de compra. Adicionalmente, ofrecemos asesoría para la contratación de AppleCare+ para extender la protección.
+            Todos nuestros productos cuentan con garantía según las especificaciones del fabricante contra defectos de fabricación.
+            La garantía varía según el tipo de producto y fabricante. Para productos electrónicos, la garantía estándar cubre generalmente 1 año desde la fecha de compra.
             La garantía no cubre daños causados por accidentes, líquidos, uso indebido o modificaciones no autorizadas.
           </p>
         </section>        <section class="terms-section">

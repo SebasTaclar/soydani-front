@@ -71,7 +71,18 @@
           <!-- Información del producto -->
           <div class="product-info">
             <h3 class="product-name">{{ product.name }}</h3>
-            <p class="product-description">{{ product.description }}</p>
+            <div class="product-description">
+              <p class="truncated">
+                {{ product.description }}
+              </p>
+              <button
+                v-if="shouldShowReadMore(product.description)"
+                @click.stop="openProductModal(product)"
+                class="read-more-btn"
+              >
+                Ver más
+              </button>
+            </div>
 
             <!-- Precios -->
             <div class="price-section">
@@ -660,6 +671,13 @@ const selectedImageIndex = ref(0)
 // Productos y categorías desde el composable
 const products = computed(() => availableProducts.value)
 
+// Función para determinar si la descripción es lo suficientemente larga (más de 4 líneas aprox 150 caracteres)
+const shouldShowReadMore = (description: string) => {
+  // Considerando que cada línea tiene aproximadamente 35-40 caracteres en el ancho de tarjeta
+  // 4 líneas = aproximadamente 150 caracteres
+  return description.length > 150
+}
+
 // Computada para mapear el producto con inStock e image (para compatibilidad con useCart)
 const mappedSelectedProduct = computed(() => {
   if (!selectedProduct.value) return null
@@ -1147,10 +1165,44 @@ const getColorHex = (colorName: string): string => {
 .product-description {
   color: #666;
   margin-bottom: 0.8rem;
-  line-height: 1.4;
   font-size: 0.9rem;
+}
+
+.product-description p {
+  line-height: 1.5;
   text-align: justify;
   hyphens: auto;
+  margin: 0;
+  transition: max-height 0.3s ease;
+}
+
+.product-description p.truncated {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: calc(1.5em * 4); /* 4 líneas con line-height 1.5 */
+}
+
+.read-more-btn {
+  background: none;
+  border: none;
+  color: var(--brand-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.4rem 0;
+  margin-top: 0.3rem;
+  transition: all 0.2s ease;
+  text-decoration: underline;
+  display: inline-block;
+}
+
+.read-more-btn:hover {
+  color: var(--brand-accent-alt);
+  text-decoration: none;
 }
 
 /* Colores del producto */

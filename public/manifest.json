@@ -1,11 +1,11 @@
 {
-  "name": "Apple Store Pro",
-  "short_name": "AppleStorePro",
-  "description": "Tu tienda de confianza para productos Apple. iPhone, MacBook, iPad y accesorios con garantía oficial.",
+  "name": "SOYDANI",
+  "short_name": "SOYDANI",
+  "description": "Tu tienda de confianza para tecnología, decoración navideña y artículos del hogar. Calidad y atención personalizada.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#10B981",
+  "background_color": "#000000",
+  "theme_color": "#DC2626",
   "orientation": "portrait-primary",
   "lang": "es-CO",
   "dir": "ltr",
@@ -60,7 +60,7 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["shopping", "technology", "lifestyle"],
+  "categories": ["shopping", "technology", "lifestyle", "home", "seasonal"],
   "screenshots": [
     {
       "src": "/images/screenshot-1.jpg",
@@ -70,9 +70,9 @@
   ],
   "shortcuts": [
     {
-      "name": "iPhone",
-      "short_name": "iPhone",
-      "description": "Ver productos iPhone",
+      "name": "Tecnología",
+      "short_name": "Tech",
+      "description": "Ver productos de tecnología",
       "url": "/iphone",
       "icons": [
         {
@@ -82,10 +82,22 @@
       ]
     },
     {
-      "name": "Mac",
-      "short_name": "Mac",
-      "description": "Ver productos Mac",
+      "name": "Navidad",
+      "short_name": "Navidad",
+      "description": "Ver decoración navideña",
       "url": "/mac",
+      "icons": [
+        {
+          "src": "/icons/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Hogar",
+      "short_name": "Hogar",
+      "description": "Ver artículos del hogar",
+      "url": "/ipad",
       "icons": [
         {
           "src": "/icons/icon-96x96.png",

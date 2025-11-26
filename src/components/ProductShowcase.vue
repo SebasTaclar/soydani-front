@@ -1,132 +1,92 @@
 <template>
-  <div class="apple-products-showcase">
+  <section class="showcase-section">
     <div class="container">
-      <h2 class="showcase-title">Novedades Apple Store Pro</h2>
-      <p class="showcase-subtitle">Lanzamientos recientes y actualizaciones clave del ecosistema Apple.</p>
+      <h2 class="showcase-title">Novedades</h2>
+      <p class="showcase-subtitle">Descubre nuestros productos más recientes</p>
 
-      <!-- Vista Desktop: Grid normal -->
-      <div class="products-grid desktop-only">
-        <div
-          v-for="product in products"
-          :key="product.id"
-          class="product-card-circular"
-          @click="showProductDetail(product)"
-        >
-          <div class="circular-container">
-            <div class="product-image-circular">
-              <img :src="product.image" :alt="product.name" loading="lazy" />
+      <!-- Sección: Tecnología -->
+      <div v-if="technologyProducts.length > 0" class="category-section">
+        <h3 class="category-title">📱 Tecnología</h3>
+        <div class="products-carousel">
+          <div
+            v-for="product in technologyProducts"
+            :key="product.id"
+            class="product-card"
+            @click="showProductDetail(product)"
+          >
+            <div class="product-image-wrapper">
+              <img :src="product.image" :alt="product.name" class="product-image" />
             </div>
-            <div class="product-name-circular">
-              <h3>{{ product.name }}</h3>
+            <div class="product-info">
+              <h4 class="product-name">{{ product.name }}</h4>
+              <span class="product-category">{{ product.category }}</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Vista Móvil: Carruseles por categoría -->
-      <div class="mobile-carousels mobile-only">
-        <!-- Carrusel iPhone -->
-        <div v-if="iphoneProducts.length > 0" class="carousel-section">
-          <h3 class="carousel-category-title">iPhone</h3>
-          <div class="carousel-wrapper">
-            <div class="carousel-track">
-              <div
-                v-for="product in iphoneProducts"
-                :key="product.id"
-                class="product-card-circular"
-                @click="showProductDetail(product)"
-              >
-                <div class="circular-container">
-                  <div class="product-image-circular">
-                    <img :src="product.image" :alt="product.name" loading="lazy" />
-                  </div>
-                  <div class="product-name-circular">
-                    <h3>{{ product.name }}</h3>
-                  </div>
-                </div>
-              </div>
+      <!-- Sección: Navidad -->
+      <div v-if="christmasProducts.length > 0" class="category-section">
+        <h3 class="category-title">🎄 Navidad</h3>
+        <div class="products-carousel">
+          <div
+            v-for="product in christmasProducts"
+            :key="product.id"
+            class="product-card"
+            @click="showProductDetail(product)"
+          >
+            <div class="product-image-wrapper">
+              <img :src="product.image" :alt="product.name" class="product-image" />
+            </div>
+            <div class="product-info">
+              <h4 class="product-name">{{ product.name }}</h4>
+              <span class="product-category">{{ product.category }}</span>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Carrusel Mac & iPad -->
-        <div v-if="macIpadProducts.length > 0" class="carousel-section">
-          <h3 class="carousel-category-title">Mac & iPad</h3>
-          <div class="carousel-wrapper">
-            <div class="carousel-track">
-              <div
-                v-for="product in macIpadProducts"
-                :key="product.id"
-                class="product-card-circular"
-                @click="showProductDetail(product)"
-              >
-                <div class="circular-container">
-                  <div class="product-image-circular">
-                    <img :src="product.image" :alt="product.name" loading="lazy" />
-                  </div>
-                  <div class="product-name-circular">
-                    <h3>{{ product.name }}</h3>
-                  </div>
-                </div>
-              </div>
+      <!-- Sección: Hogar -->
+      <div v-if="homeProducts.length > 0" class="category-section">
+        <h3 class="category-title">🏠 Hogar</h3>
+        <div class="products-carousel">
+          <div
+            v-for="product in homeProducts"
+            :key="product.id"
+            class="product-card"
+            @click="showProductDetail(product)"
+          >
+            <div class="product-image-wrapper">
+              <img :src="product.image" :alt="product.name" class="product-image" />
             </div>
-          </div>
-        </div>
-
-        <!-- Carrusel Watch & Accesorios -->
-        <div v-if="watchAccessoriesProducts.length > 0" class="carousel-section">
-          <h3 class="carousel-category-title">Watch, AirPods & Accesorios</h3>
-          <div class="carousel-wrapper">
-            <div class="carousel-track">
-              <div
-                v-for="product in watchAccessoriesProducts"
-                :key="product.id"
-                class="product-card-circular"
-                @click="showProductDetail(product)"
-              >
-                <div class="circular-container">
-                  <div class="product-image-circular">
-                    <img :src="product.image" :alt="product.name" loading="lazy" />
-                  </div>
-                  <div class="product-name-circular">
-                    <h3>{{ product.name }}</h3>
-                  </div>
-                </div>
-              </div>
+            <div class="product-info">
+              <h4 class="product-name">{{ product.name }}</h4>
+              <span class="product-category">{{ product.category }}</span>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Modal para mostrar descripción del producto -->
-    <div v-if="showModal" class="modal-overlay" @click="showModal = false">
-      <div class="modal-content" @click.stop>
+    <!-- Modal de detalle del producto -->
+    <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
+      <div class="modal-content">
         <div class="modal-header">
-          <h2 class="modal-title">{{ selectedProduct?.name }}</h2>
-          <button class="modal-close" @click="showModal = false">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="m18 6-12 12"/>
-              <path d="m6 6 12 12"/>
-            </svg>
-          </button>
+          <h3 class="modal-title">{{ selectedProduct?.name }}</h3>
+          <button class="modal-close" @click="showModal = false">✕</button>
         </div>
         <div class="modal-body">
           <div class="modal-image">
-            <img :src="selectedProduct?.image" :alt="selectedProduct?.name" loading="lazy" decoding="async" />
+            <img :src="selectedProduct?.image" :alt="selectedProduct?.name" />
           </div>
           <div class="modal-info">
-            <div class="modal-category">
-              {{ selectedProduct?.category }}
-            </div>
-            <p class="modal-description">
-              {{ selectedProduct?.description }}
-            </p>
+            <span class="modal-category">{{ selectedProduct?.category }}</span>
+            <p class="modal-description">{{ selectedProduct?.description }}</p>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -135,12 +95,6 @@ import { useProducts } from '@/composables/useProducts'
 
 // Usar el composable de productos para novedades
 const { showcaseProducts, getCategoryById, loadShowcaseProducts } = useProducts()
-
-// Cargar productos showcase al montar el componente
-onMounted(async () => {
-  console.log('🌟 [ProductShowcase] Cargando productos showcase...')
-  await loadShowcaseProducts()
-})
 
 // Estado para el modal
 const showModal = ref(false)
@@ -152,9 +106,15 @@ const selectedProduct = ref<{
   category: string
 } | null>(null)
 
+// Cargar productos showcase al montar el componente
+onMounted(async () => {
+  console.log('🌟 [ProductShowcase] Cargando productos showcase...')
+  await loadShowcaseProducts()
+})
+
 // Mapear los productos del composable al formato que usa el template
 const products = computed(() => {
-  const mapped = showcaseProducts.value.map(product => ({
+  return showcaseProducts.value.map(product => ({
     id: parseInt(product.id),
     name: product.name,
     description: product.description,
@@ -162,82 +122,34 @@ const products = computed(() => {
     price: product.price,
     category: getCategoryById(product.category)?.name || 'Sin categoría'
   }))
-
-  // Helper: extraer número de modelo desde el nombre (ej. "iPhone 17 Pro Max" -> 17)
-  const extractModelNumber = (name: string): number | null => {
-    if (!name) return null
-    const m = name.match(/\d+/)
-    return m ? parseInt(m[0], 10) : null
-  }
-
-  // Separar iPhones y el resto; iPhones primero ordenados por número de modelo descendente
-  const iphones = mapped
-    .filter(p => p.category.toLowerCase().includes('iphone'))
-    .slice()
-    .sort((a, b) => {
-      const na = extractModelNumber(a.name)
-      const nb = extractModelNumber(b.name)
-      if (na !== null && nb !== null) return nb - na // mayor -> menor
-      if (na !== null) return -1 // a tiene número, poner antes
-      if (nb !== null) return 1  // b tiene número, poner antes
-      // fallback: por precio descendente, luego por nombre
-      const priceDiff = (b.price ?? 0) - (a.price ?? 0)
-      if (priceDiff !== 0) return priceDiff
-      return a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
-    })
-
-  // El resto de productos se ordenan alfabéticamente (A -> Z)
-  const others = mapped
-    .filter(p => !p.category.toLowerCase().includes('iphone'))
-    .slice()
-    .sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }))
-
-  return [...iphones, ...others]
 })
 
-// Filtrar productos por categoría (para móvil)
-const iphoneProducts = computed(() =>
-  // Filtrar y ordenar por número de modelo (mayor -> menor), fallback a precio
-  products.value
-    .filter(p => p.category.toLowerCase().includes('iphone'))
-    .slice()
-    .sort((a, b) => {
-      const extractModelNumber = (name: string): number | null => {
-        if (!name) return null
-        const m = name.match(/\d+/)
-        return m ? parseInt(m[0], 10) : null
-      }
-      const na = extractModelNumber(a.name)
-      const nb = extractModelNumber(b.name)
-      if (na !== null && nb !== null) return nb - na
-      if (na !== null) return -1
-      if (nb !== null) return 1
-      return (b.price ?? 0) - (a.price ?? 0)
-    })
-)
+// Filtrar productos por categoría principal
+const technologyProducts = computed(() => {
+  return products.value.filter(p => {
+    const cat = p.category.toLowerCase()
+    return cat.includes('iphone') || cat.includes('tecnología') ||
+           cat.includes('tecnologia') || cat.includes('tech')
+  }).slice(0, 6)
+})
 
-const macIpadProducts = computed(() =>
-  // Filtrar y ordenar por precio de mayor a menor para Mac & iPad
-  products.value
-    .filter(p => {
-      const cat = p.category.toLowerCase()
-      return cat.includes('mac') || cat.includes('ipad')
-    })
-    .slice()
-    .sort((a, b) => (b.price ?? 0) - (a.price ?? 0))
-)
+const christmasProducts = computed(() => {
+  return products.value.filter(p => {
+    const cat = p.category.toLowerCase()
+    return cat.includes('navidad') || cat.includes('christmas') ||
+           cat.includes('árbol') || cat.includes('arbol') ||
+           cat.includes('bola') || cat.includes('decoración navideña')
+  }).slice(0, 6)
+})
 
-const watchAccessoriesProducts = computed(() =>
-  // Filtrar y ordenar por precio de mayor a menor para Watch & Accesorios
-  products.value
-    .filter(p => {
-      const cat = p.category.toLowerCase()
-      return cat.includes('watch') || cat.includes('reloj') ||
-             cat.includes('accesorio') || cat.includes('accessory')
-    })
-    .slice()
-    .sort((a, b) => (b.price ?? 0) - (a.price ?? 0))
-)
+const homeProducts = computed(() => {
+  return products.value.filter(p => {
+    const cat = p.category.toLowerCase()
+    return cat.includes('hogar') || cat.includes('home') ||
+           cat.includes('casa') || cat.includes('decoración') ||
+           cat.includes('watch') || cat.includes('accesorio')
+  }).slice(0, 6)
+})
 
 // Funciones para el modal
 const showProductDetail = (product: {
@@ -253,253 +165,230 @@ const showProductDetail = (product: {
 </script>
 
 <style scoped>
-.apple-products-showcase {
-  padding: 1rem 0;
-  background: #1a1a1a;
+/* Variables de tema SOYDANI */
+:root {
+  --primary-red: #DC2626;
+  --black: #000000;
+  --white: #FFFFFF;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Contenedor principal - ESTILO OSCURO */
+.showcase-section {
+  width: 100%;
+  background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
+  padding: 5rem 0;
   position: relative;
+  overflow: hidden;
+}
+
+.showcase-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(220, 38, 38, 0.15) 0%, transparent 60%);
+  pointer-events: none;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 1;
 }
 
+/* Títulos */
 .showcase-title {
-  font-size: 1.6rem;
-  font-weight: 700;
+  font-size: 3rem;
+  font-weight: 800;
   text-align: center;
-  margin-bottom: 0.15rem;
-  color: #ffffff;
+  margin-bottom: 0.5rem;
+  color: var(--white);
+  letter-spacing: -0.02em;
+  animation: fadeIn 0.8s ease-out;
 }
 
 .showcase-subtitle {
-  font-size: 0.8rem;
-  color: rgba(255,255,255,0.7);
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.6);
   text-align: center;
-  max-width: 450px;
-  margin: 0 auto 1rem;
-  line-height: 1.2;
+  margin-bottom: 4rem;
+  animation: fadeIn 1s ease-out;
 }
 
-/* Mostrar/Ocultar según dispositivo */
-.desktop-only {
-  display: flex;
+/* Sección de categoría */
+.category-section {
+  margin-bottom: 4rem;
+  animation: slideIn 0.8s ease-out;
 }
 
-.mobile-only {
-  display: none;
+.category-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-red);
+  margin-bottom: 2rem;
+  padding-left: 1rem;
+  border-left: 4px solid var(--primary-red);
+  text-shadow: 0 2px 10px rgba(220, 38, 38, 0.3);
 }
 
-/* Grid para Desktop */
-.products-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2.5rem;
-  margin-top: 0.25rem;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  justify-content: center;
-}
-
-/* Carruseles para Móvil */
-.mobile-carousels {
-  width: 100%;
-}
-
-.carousel-section {
-  margin-bottom: 2.5rem;
-}
-
-.carousel-category-title {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #3b82f6;
-  text-align: center;
-  margin-bottom: 1rem;
-  letter-spacing: 0.5px;
-}
-
-.carousel-wrapper {
-  width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
-  scroll-behavior: smooth;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
-  padding: 0.5rem 0;
-}
-
-.carousel-wrapper::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
-}
-
-.carousel-track {
-  display: flex;
-  gap: 1.5rem;
+/* Carrusel de productos */
+.products-carousel {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 2rem;
   padding: 0 1rem;
-  width: max-content;
 }
 
-/* Estilos para tarjetas circulares */
-.product-card-circular {
-  cursor: pointer;
-  transition: all 0.3s ease;
-  width: 100%;
-  max-width: 160px;
-}
-
-.product-card-circular:hover {
-  transform: translateY(-8px) scale(1.05);
-}
-
-.circular-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.product-image-circular {
-  position: relative;
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
+/* Tarjeta de producto */
+.product-card {
+  background: rgba(30, 30, 30, 0.8);
+  border-radius: 16px;
   overflow: hidden;
-  border: 4px solid #60a5fa;
-  margin-bottom: 1rem;
-  background: #2a2a2a;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(96, 165, 250, 0.2);
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
 }
 
-.product-card-circular:hover .product-image-circular {
-  border-color: #3b82f6;
-  box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
-  transform: scale(1.02);
+.product-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(220, 38, 38, 0.3),
+              0 0 0 1px rgba(220, 38, 38, 0.5);
+  border-color: var(--primary-red);
 }
 
-.product-image-circular img {
-  width: 110%;
-  height: 110%;
-  object-fit: cover;
-  object-position: center;
-  transition: transform 0.3s ease;
-  margin: -5%;
-}
-
-.product-card-circular:hover .product-image-circular img {
-  transform: scale(1.08);
-}
-
-.product-name-circular {
+.product-image-wrapper {
   width: 100%;
+  height: 250px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+  position: relative;
 }
 
-.product-name-circular h3 {
-  font-size: 1rem;
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.1);
+}
+
+.product-info {
+  padding: 1.25rem;
+}
+
+.product-name {
+  font-size: 1.1rem;
   font-weight: 600;
-  color: #ffffff;
-  margin: 0;
-  letter-spacing: -0.2px;
-  line-height: 1.3;
-  text-align: center;
+  color: var(--white);
+  margin: 0 0 0.75rem 0;
+  line-height: 1.4;
 }
 
-.product-card-circular:hover .product-name-circular h3 {
-  color: #3b82f6;
+.product-category {
+  display: inline-block;
+  font-size: 0.85rem;
+  color: var(--primary-red);
+  background: rgba(220, 38, 38, 0.15);
+  padding: 0.35rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 500;
+  border: 1px solid rgba(220, 38, 38, 0.3);
 }
 
-/* Modal Styles */
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999;
   backdrop-filter: blur(10px);
   animation: fadeIn 0.3s ease;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 .modal-content {
-  background: #2a2a2a;
-  border-radius: 20px;
-  max-width: 900px;
+  background: #1a1a1a;
+  border-radius: 24px;
+  max-width: 800px;
   width: 90%;
   max-height: 90vh;
   overflow: auto;
-  border: 1px solid #333;
-  animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem;
-  border-bottom: 1px solid #333;
-  background: #1f1f1f;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(10, 10, 10, 0.5);
 }
 
 .modal-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--white);
   margin: 0;
 }
 
 .modal-close {
   background: none;
   border: none;
-  color: #999;
+  color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  font-size: 2rem;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
 }
 
 .modal-close:hover {
-  background: #333;
-  color: #ffffff;
+  background: rgba(220, 38, 38, 0.2);
+  color: var(--primary-red);
+  transform: rotate(90deg);
 }
 
 .modal-body {
-  padding: 1.5rem;
+  padding: 2rem;
 }
 
 .modal-image {
   width: 100%;
-  height: 450px;
-  border-radius: 15px;
+  height: 400px;
+  border-radius: 16px;
   overflow: hidden;
-  margin-bottom: 1.5rem;
-  background: #1f1f1f;
+  margin-bottom: 2rem;
+  background: #0a0a0a;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -518,120 +407,126 @@ const showProductDetail = (product: {
 .modal-category {
   display: inline-block;
   padding: 0.5rem 1rem;
-  background: rgba(59, 130, 246, 0.2);
-  color: #3b82f6;
+  background: rgba(220, 38, 38, 0.2);
+  color: var(--primary-red);
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
   margin-bottom: 1rem;
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  border: 1px solid rgba(220, 38, 38, 0.4);
 }
 
 .modal-description {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.8);
-  margin: 0;
-}
-
-.modal-description {
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: 1.05rem;
+  line-height: 1.7;
   color: rgba(255, 255, 255, 0.8);
   margin: 0;
 }
 
 /* Responsive Design */
-@media (max-width: 1200px) {
-  .products-grid {
-    max-width: 800px;
-  }
-}
-
 @media (max-width: 1024px) {
-  .products-grid {
-    max-width: 600px;
-    gap: 2rem;
+  .products-carousel {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
   }
 }
 
 @media (max-width: 768px) {
-  /* Cambiar a vista móvil con carruseles */
-  .desktop-only {
-    display: none !important;
+  .showcase-section {
+    padding: 3rem 0;
   }
 
-  .mobile-only {
-    display: block !important;
-  }
-
-  .product-image-circular {
-    width: 140px;
-    height: 140px;
-  }
-
-  .product-name-circular h3 {
-    font-size: 0.9rem;
+  .container {
+    padding: 0;
   }
 
   .showcase-title {
-    font-size: 1.4rem;
+    font-size: 2.25rem;
+    padding: 0 1.5rem;
   }
 
-  .carousel-category-title {
-    font-size: 1.1rem;
+  .showcase-subtitle {
+    font-size: 1rem;
+    margin-bottom: 3rem;
+    padding: 0 1.5rem;
   }
 
-  .carousel-section {
-    margin-bottom: 2rem;
+  .category-section {
+    margin-bottom: 3rem;
+  }
+
+  .category-title {
+    font-size: 1.5rem;
+    padding-left: 1.5rem;
+    margin-left: 0;
+  }
+
+  /* Carrusel horizontal deslizable en móvil */
+  .products-carousel {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 1rem;
+    padding: 0 1.5rem;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+  }
+
+  .products-carousel::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+
+  .product-card {
+    flex: 0 0 280px;
+    scroll-snap-align: start;
+  }
+
+  .product-image-wrapper {
+    height: 280px;
   }
 
   .modal-content {
     width: 95%;
-    max-height: 85vh;
-  }
-
-  .modal-header {
-    padding: 1rem;
-  }
-
-  .modal-body {
-    padding: 1rem;
   }
 
   .modal-image {
     height: 300px;
   }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
 }
 
 @media (max-width: 480px) {
-  .product-image-circular {
-    width: 130px;
-    height: 130px;
-  }
-
-  .product-name-circular h3 {
-    font-size: 0.85rem;
-  }
-
   .showcase-title {
-    font-size: 1.2rem;
+    font-size: 1.75rem;
   }
 
-  .showcase-subtitle {
-    font-size: 0.75rem;
+  .category-title {
+    font-size: 1.25rem;
   }
 
-  .carousel-category-title {
+  .product-card {
+    flex: 0 0 260px;
+  }
+
+  .product-image-wrapper {
+    height: 260px;
+  }
+
+  .product-info {
+    padding: 1rem;
+  }
+
+  .product-name {
     font-size: 1rem;
   }
 
-  .carousel-track {
-    gap: 1.2rem;
-    padding: 0 0.75rem;
+  .modal-image {
+    height: 250px;
   }
 }
 </style>
-
