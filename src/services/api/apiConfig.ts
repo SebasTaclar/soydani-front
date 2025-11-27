@@ -2,7 +2,7 @@
 export const API_CONFIG = {
   baseURL: import.meta.env.DEV
     ? 'http://localhost:7071/api/v1'
-    : 'https://appstorepro-back-dwgtarbdaecbdvfw.centralus-01.azurewebsites.net/api/v1',
+    : 'https://soydani-back-csf6gmejcfdwdygu.centralus-01.azurewebsites.net/api/v1',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
