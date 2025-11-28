@@ -1,18 +1,19 @@
 <template>
-  <div class="mac-page">
-    <!-- Hero Banner con Carrusel Dinámico -->
+  <div class="home-page">
+    <!-- Hero Banner Section con Carrusel -->
     <section class="hero-banner">
       <div class="carousel-container">
+        <!-- Slides del carrusel dinámicos desde productos de showcase de Hogar -->
         <div class="carousel-track" :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
           <div
-            v-for="product in macShowcaseProducts"
+            v-for="product in homeShowcaseProducts"
             :key="product.id"
             class="carousel-slide"
           >
             <div class="slide-content">
               <div class="slide-text">
                 <h1 class="slide-title">{{ product.name }}</h1>
-                <p class="slide-description">{{ product.description }}</p>
+                <p class="slide-subtitle">{{ product.description }}</p>
                 <button @click="scrollToProducts" class="shop-now-btn">
                   Compra ahora
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -22,7 +23,11 @@
                 </button>
               </div>
               <div class="slide-image">
-                <img :src="product.image" :alt="product.name" loading="lazy" decoding="async" />
+                <img
+                  :src="product.image"
+                  :alt="product.name"
+                  loading="lazy"
+                />
               </div>
             </div>
           </div>
@@ -30,24 +35,25 @@
 
         <!-- Controles del carrusel -->
         <button class="carousel-btn prev" @click="prevSlide" aria-label="Anterior">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="m15 18-6-6 6-6"/>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
           </svg>
         </button>
         <button class="carousel-btn next" @click="nextSlide" aria-label="Siguiente">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="m9 18 6-6-6-6"/>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
           </svg>
         </button>
 
         <!-- Indicadores -->
         <div class="carousel-indicators">
           <button
-            v-for="(_, index) in macShowcaseProducts"
-            :key="index"
-            :class="['indicator', { active: currentSlide === index }]"
+            v-for="(product, index) in homeShowcaseProducts"
+            :key="product.id"
+            class="indicator"
+            :class="{ active: currentSlide === index }"
             @click="goToSlide(index)"
-            :aria-label="`Ir a slide ${index + 1}`"
+            :aria-label="`Ir a ${product.name}`"
           ></button>
         </div>
       </div>
@@ -61,9 +67,9 @@
           <p>Cargando productos...</p>
         </div>
 
-        <div v-else-if="macProducts.length > 0" class="products-container">
+        <div v-else-if="homeProducts.length > 0" class="products-container">
           <div
-            v-for="product in macProducts"
+            v-for="product in homeProducts"
             :key="product.id"
             class="product-card-modern"
             @click="handleAddToCart(product)"
@@ -91,6 +97,7 @@
                 </span>
               </div>
 
+
               <button class="product-btn" @click.stop="handleAddToCart(product)">
                 Comprar
               </button>
@@ -99,24 +106,91 @@
         </div>
 
         <div v-else class="empty-state">
-          <p>No hay productos Mac disponibles en este momento</p>
+          <p>No hay productos para el hogar disponibles en este momento</p>
         </div>
       </div>
     </section>
 
-    <!-- Sección de Información -->
+    <!-- Sección Informativa - Hogar -->
     <section class="info-section">
       <div class="container">
         <div class="info-content-centered">
-          <h2 class="info-title">Por qué elegir Mac</h2>
+          <h2 class="info-title">Hogar - Productos para Toda la Familia</h2>
           <p class="info-text">
-            Mac combina potencia excepcional con un diseño elegante. Equipado con los revolucionarios chips de Apple Silicon,
-            ofrece un rendimiento increíble para edición de video, diseño gráfico, desarrollo y más. macOS proporciona una
-            experiencia fluida y segura, perfectamente integrada con tu ecosistema Apple.
+            Descubre los mejores productos para tu hogar y toda la familia. Desde artículos
+            decorativos hasta productos prácticos para el día a día, todo lo que necesitas para
+            crear un espacio cómodo, funcional y acogedor. Encuentra soluciones para el
+            entretenimiento familiar, organización del hogar, cocina, limpieza y mucho más.
+            Productos de calidad que mejoran tu estilo de vida y el de tu familia. Diseños modernos
+            que se adaptan a cualquier espacio, durabilidad garantizada y la mejor relación
+            calidad-precio. Transforma tu casa en el hogar perfecto con nuestra selección especial.
           </p>
         </div>
       </div>
     </section>
+
+    <!-- Sección de Características Destacadas
+    <section class="features-section">
+      <div class="container">
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+              </svg>
+            </div>
+            <h3 class="feature-title">Dynamic Island</h3>
+            <p class="feature-text">
+              Una nueva forma de interactuar con tu iPad. Notificaciones en vivo,
+              alertas y actividades en una experiencia fluida y mágica.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 6v6l4 2"></path>
+              </svg>
+            </div>
+            <h3 class="feature-title">Chip A18 Pro</h3>
+            <p class="feature-text">
+              Rendimiento extremo. El chip más avanzado en un smartphone con
+              velocidades impresionantes y eficiencia energética sin precedentes.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+            </div>
+            <h3 class="feature-title">Sistema de Cámaras Pro</h3>
+            <p class="feature-text">
+              Captura cada momento con calidad cinematográfica. Fotos de 48MP,
+              modo nocturno mejorado y video 4K ProRes.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </div>
+            <h3 class="feature-title">Batería de Todo el Día</h3>
+            <p class="feature-text">
+              Hasta 29 horas de reproducción de video. Carga rápida,
+              carga inalámbrica y compatible con MagSafe.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section> -->
 
     <!-- Botón del carrito flotante -->
     <div v-if="totalItems > 0" class="floating-cart" @click="toggleCart">
@@ -231,7 +305,7 @@
           <div class="modal-info">
             <h2 class="modal-title">{{ selectedProduct?.name }}</h2>
             <div class="modal-category">
-              Mac
+              iPad
             </div>
             <p class="modal-description">
               {{ selectedProduct?.description }}
@@ -294,25 +368,24 @@ import { useProducts } from '@/composables/useProducts'
 import { useCategories } from '@/composables/useCategories'
 import { useCart } from '@/composables/useCart'
 import type { Product } from '@/composables/useProducts'
-
-
 import { useHead } from '@vueuse/head'
 
 useHead({
-  title: 'MacBook Air, MacBook Pro | Apple Store Pro',
+  title: 'Hogar - Productos para Toda la Familia | SOYDANI',
   meta: [
     {
       name: 'description',
-      content: 'Descubre la potencia del nuevo MacBook Air, MacBook Pro y mucho más. Tienda oficial Apple Store Pro Colombia.'
+      content: 'Descubre los mejores productos para tu hogar y familia. Artículos decorativos, productos prácticos para el día a día, organización, cocina y mucho más en SOYDANI.'
     },
-    { property: 'og:title', content: 'MacBook Air, MacBook Pro | Apple Store Pro' },
-    { property: 'og:description', content: 'Descubre la potencia del nuevo MacBook Air, MacBook Pro y mucho más. Tienda oficial Apple Store Pro Colombia.' },
-    { property: 'og:image', content: 'https://www.mistorepro.com/images/macbookpro.jpg' },
-    { property: 'og:url', content: 'https://www.mistorepro.com/mac' },
+    { property: 'og:title', content: 'Hogar - Productos para Toda la Familia | SOYDANI' },
+    { property: 'og:description', content: 'Productos para el hogar, decoración, organización y artículos prácticos para toda la familia en SOYDANI.' },
+    { property: 'og:image', content: 'https://www.soydani.com/images/hogar.jpg' },
+    { property: 'og:url', content: 'https://www.soydani.com/hogar' },
     { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:image', content: 'https://www.mistorepro.com/images/macbookpro.jpg' }
+    { name: 'twitter:image', content: 'https://www.soydani.com/images/hogar.jpg' }
   ]
 })
+
 
 const router = useRouter()
 const { regularProducts, loadProducts, showcaseProducts, loadShowcaseProducts } = useProducts()
@@ -334,35 +407,31 @@ const {
 
 const isLoadingProducts = ref(true)
 
-// Carrusel dinámico basado en productos de showcase de Mac
+// Carrusel dinámico basado en productos de showcase de iPad
 const currentSlide = ref(0)
 let autoplayInterval: number | null = null
 
-const macCategory = computed(() => {
-  return categories.value.find(cat =>
-    cat.name.toLowerCase().includes('mac') ||
-    cat.name.toLowerCase().includes('macbook') ||
-    cat.name.toLowerCase().includes('imac')
-  )
-})
+// Filtrar productos showcase de Hogar para el carrusel
+const homeShowcaseProducts = computed(() => {
+  return showcaseProducts.value.filter(p => {
+    const categoryName = categories.value.find(cat => cat.id === p.category)?.name.toLowerCase() || ''
+    const productName = p.name.toLowerCase()
+    const productDesc = p.description.toLowerCase()
 
-// Filtrar productos showcase de Mac para el carrusel
-const macShowcaseProducts = computed(() => {
-  if (!macCategory.value) return []
-
-  return showcaseProducts.value.filter(p =>
-    p.category === macCategory.value!.id ||
-    p.category.toLowerCase().includes('mac')
-  )
+    return categoryName.includes('hogar') || categoryName.includes('home') ||
+           categoryName.includes('casa') || categoryName.includes('decoración') ||
+           categoryName.includes('decoracion') || productName.includes('hogar') ||
+           productName.includes('casa') || productDesc.includes('hogar')
+  })
 })
 
 const nextSlide = () => {
-  const total = macShowcaseProducts.value.length || 1
+  const total = homeShowcaseProducts.value.length || 1
   currentSlide.value = (currentSlide.value + 1) % total
 }
 
 const prevSlide = () => {
-  const total = macShowcaseProducts.value.length || 1
+  const total = homeShowcaseProducts.value.length || 1
   currentSlide.value = (currentSlide.value - 1 + total) % total
 }
 
@@ -384,20 +453,23 @@ const stopAutoplay = () => {
   }
 }
 
-// Filtrar productos de Mac
-const macProducts = computed(() => {
-  if (!macCategory.value) return []
-
+// Filtrar productos de Hogar
+const homeProducts = computed(() => {
   return regularProducts.value
     .filter(p => {
-      const categoryMatch = p.category === macCategory.value!.id
+      const categoryName = categories.value.find(cat => cat.id === p.category)?.name.toLowerCase() || ''
+      const productName = p.name.toLowerCase()
+      const productDesc = p.description.toLowerCase()
       const statusMatch = p.status === 'available' || p.status === 'coming-soon'
-      return categoryMatch && statusMatch
+
+      const isHome = categoryName.includes('hogar') || categoryName.includes('home') ||
+                     categoryName.includes('casa') || categoryName.includes('decoración') ||
+                     categoryName.includes('decoracion') || productName.includes('hogar') ||
+                     productName.includes('casa') || productDesc.includes('hogar')
+
+      return isHome && statusMatch
     })
-    .sort((a, b) => {
-      // Ordenar por precio de mayor a menor
-      return b.price - a.price
-    })
+    .sort((a, b) => b.price - a.price)
 })
 
 // Estado para el modal de producto
@@ -419,11 +491,6 @@ const closeModal = () => {
   showModal.value = false
   selectedProduct.value = null
   modalSelectedColor.value = ''
-}
-
-// Función para agregar al carrito (abre el modal)
-const handleAddToCart = (product: Product) => {
-  openProductModal(product)
 }
 
 // Función para ir al checkout
@@ -463,6 +530,11 @@ const addToCartFromModal = () => {
     addToCart(mappedProduct, 1, modalSelectedColor.value || undefined)
     closeModal()
   }
+}
+
+// Función obsoleta - ahora abre el modal
+const handleAddToCart = (product: Product) => {
+  openProductModal(product)
 }
 
 // Función para obtener el texto del estado del producto
@@ -539,7 +611,7 @@ onMounted(async () => {
     await loadShowcaseProducts()
     startAutoplay()
   } catch (error) {
-    console.error('Error cargando datos de Mac:', error)
+    console.error('Error cargando datos de Hogar:', error)
   } finally {
     isLoadingProducts.value = false
   }
@@ -553,7 +625,7 @@ onUnmounted(() => {
 
 <style scoped>
 /* === TEMA OSCURO === */
-.mac-page {
+.home-page {
   min-height: 100vh;
   background: #000000;
   color: #f5f5f7;
@@ -636,14 +708,6 @@ onUnmounted(() => {
   animation: fadeInUp 0.6s ease-out 0.2s both;
 }
 
-.slide-description {
-  font-size: 1.0rem;
-  color: #a1a1a6;
-  line-height: 1.7;
-  max-width: 480px;
-  animation: fadeInUp 0.6s ease-out 0.3s both;
-}
-
 .shop-now-btn {
   display: inline-flex;
   align-items: center;
@@ -679,6 +743,14 @@ onUnmounted(() => {
 @keyframes bounce {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(5px); }
+}
+
+.slide-description {
+  font-size: 1.0rem;
+  color: #a1a1a6;
+  line-height: 1.7;
+  max-width: 480px;
+  animation: fadeInUp 0.6s ease-out 0.3s both;
 }
 
 .slide-image {
@@ -2074,4 +2146,5 @@ onUnmounted(() => {
   }
 }
 </style>
+
 

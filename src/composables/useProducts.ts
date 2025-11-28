@@ -34,6 +34,7 @@ export interface ShowcaseProduct {
   name: string
   description: string
   price: number
+  originalPrice?: number
   image: string
   category: string
   createdAt: Date
@@ -171,6 +172,7 @@ export function useProducts() {
             name: p.name,
             description: p.description,
             price: typeof p.price === 'string' ? parseFloat(p.price) : p.price,
+            originalPrice: p.originalPrice ? (typeof p.originalPrice === 'string' ? parseFloat(p.originalPrice) : p.originalPrice) : undefined,
             image: p.showcaseImage || (typeof p.images === 'string' ? JSON.parse(p.images)[0] : p.images[0]) || '',
             category: p.categoryId.toString(),
             createdAt: new Date(p.createdAt)
@@ -198,6 +200,7 @@ export function useProducts() {
         name: productData.name,
         description: productData.description,
         price: productData.price,
+        ...(productData.originalPrice && { originalPrice: productData.originalPrice }),
         images: [productData.image],
         categoryId: parseInt(productData.category),
         status: 'available',
@@ -226,6 +229,7 @@ export function useProducts() {
         ...(productData.name && { name: productData.name }),
         ...(productData.description && { description: productData.description }),
         ...(productData.price && { price: productData.price }),
+        ...(productData.originalPrice && { originalPrice: productData.originalPrice }),
         ...(productData.image && { images: [productData.image], showcaseImage: productData.image }),
         ...(productData.category && { categoryId: parseInt(productData.category) }),
         isShowcase: true

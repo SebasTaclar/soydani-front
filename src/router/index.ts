@@ -29,27 +29,43 @@ const router = createRouter({
     },
 
     {
+      path: '/tecnologia',
+      name: 'tecnologia',
+      component: () => import('../views/TecnologiaPage.vue'),
+    },
+    {
       path: '/iphone',
-      name: 'iphone',
-      component: () => import('../views/IphonePage.vue'),
+      redirect: '/tecnologia',
     },
 
+    {
+      path: '/navidad',
+      name: 'navidad',
+      component: () => import('../views/NavidadPage.vue'),
+    },
     {
       path: '/mac',
-      name: 'mac',
-      component: () => import('../views/MacPage.vue'),
+      redirect: '/navidad',
     },
 
+    {
+      path: '/hogar',
+      name: 'hogar',
+      component: () => import('../views/HogarPage.vue'),
+    },
     {
       path: '/ipad',
-      name: 'ipad',
-      component: () => import('../views/IpadPage.vue'),
+      redirect: '/hogar',
     },
 
     {
+      path: '/ofertas',
+      name: 'ofertas',
+      component: () => import('../views/OfertasPage.vue'),
+    },
+    {
       path: '/watch',
-      name: 'watch',
-      component: () => import('../views/AppleWatchPage.vue'),
+      redirect: '/ofertas',
     },
 
     {
@@ -59,9 +75,13 @@ const router = createRouter({
     },
 
     {
+      path: '/destacados',
+      name: 'destacados',
+      component: () => import('../views/DestacadosPage.vue'),
+    },
+    {
       path: '/airpods',
-      name: 'airpods',
-      component: () => import('../views/AirPodsPage.vue'),
+      redirect: '/destacados',
     },
 
     {

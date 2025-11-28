@@ -1,19 +1,18 @@
 <template>
-  <div class="ipad-page">
-    <!-- Hero Banner Section con Carrusel -->
+  <div class="christmas-page">
+    <!-- Hero Banner con Carrusel Dinámico -->
     <section class="hero-banner">
       <div class="carousel-container">
-        <!-- Slides del carrusel dinámicos desde productos de showcase de iPad -->
         <div class="carousel-track" :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
           <div
-            v-for="product in ipadShowcaseProducts"
+            v-for="product in christmasShowcaseProducts"
             :key="product.id"
             class="carousel-slide"
           >
             <div class="slide-content">
               <div class="slide-text">
                 <h1 class="slide-title">{{ product.name }}</h1>
-                <p class="slide-subtitle">{{ product.description }}</p>
+                <p class="slide-description">{{ product.description }}</p>
                 <button @click="scrollToProducts" class="shop-now-btn">
                   Compra ahora
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -23,11 +22,7 @@
                 </button>
               </div>
               <div class="slide-image">
-                <img
-                  :src="product.image"
-                  :alt="product.name"
-                  loading="lazy"
-                />
+                <img :src="product.image" :alt="product.name" loading="lazy" decoding="async" />
               </div>
             </div>
           </div>
@@ -35,25 +30,24 @@
 
         <!-- Controles del carrusel -->
         <button class="carousel-btn prev" @click="prevSlide" aria-label="Anterior">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="15 18 9 12 15 6"></polyline>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m15 18-6-6 6-6"/>
           </svg>
         </button>
         <button class="carousel-btn next" @click="nextSlide" aria-label="Siguiente">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="9 18 15 12 9 6"></polyline>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 18 6-6-6-6"/>
           </svg>
         </button>
 
         <!-- Indicadores -->
         <div class="carousel-indicators">
           <button
-            v-for="(product, index) in ipadShowcaseProducts"
-            :key="product.id"
-            class="indicator"
-            :class="{ active: currentSlide === index }"
+            v-for="(_, index) in christmasShowcaseProducts"
+            :key="index"
+            :class="['indicator', { active: currentSlide === index }]"
             @click="goToSlide(index)"
-            :aria-label="`Ir a ${product.name}`"
+            :aria-label="`Ir a slide ${index + 1}`"
           ></button>
         </div>
       </div>
@@ -67,9 +61,9 @@
           <p>Cargando productos...</p>
         </div>
 
-        <div v-else-if="ipadProducts.length > 0" class="products-container">
+        <div v-else-if="christmasProducts.length > 0" class="products-container">
           <div
-            v-for="product in ipadProducts"
+            v-for="product in christmasProducts"
             :key="product.id"
             class="product-card-modern"
             @click="handleAddToCart(product)"
@@ -97,7 +91,6 @@
                 </span>
               </div>
 
-
               <button class="product-btn" @click.stop="handleAddToCart(product)">
                 Comprar
               </button>
@@ -106,88 +99,28 @@
         </div>
 
         <div v-else class="empty-state">
-          <p>No hay iPads disponibles en este momento</p>
+          <p>No hay productos navideños disponibles en este momento</p>
         </div>
       </div>
     </section>
 
-    <!-- Sección Informativa -->
+    <!-- Sección de Información - Navidad -->
     <section class="info-section">
       <div class="container">
         <div class="info-content-centered">
-          <h2 class="info-title">¿Por qué elegir iPad?</h2>
+          <h2 class="info-title">Navidad - Los Mejores Regalos para Estas Fiestas</h2>
           <p class="info-text">
-            La perfecta combinación entre portabilidad y potencia. iPad transforma tu forma de trabajar,
-            aprender y crear con su pantalla Liquid Retina, Apple Pencil y teclado mágico. Desde diseño
-            gráfico hasta edición de video, iPad Pro con chip M2 ofrece un rendimiento de escritorio en
-            un dispositivo ultraportátil. iPadOS lleva la multitarea al siguiente nivel.
+            Celebra la magia de la Navidad con los mejores regalos para toda la familia. Desde
+            decoración festiva hasta productos especiales para la época, encuentra todo lo que
+            necesitas para hacer de estas fiestas un momento inolvidable. Árboles de Navidad,
+            luces decorativas, adornos navideños, regalos personalizados y productos exclusivos
+            de temporada. Crea un ambiente mágico en tu hogar con nuestra selección especial de
+            Navidad. Envío seguro, productos de calidad y la mejor atención para que disfrutes
+            al máximo estas fiestas junto a tus seres queridos.
           </p>
         </div>
       </div>
     </section>
-
-    <!-- Sección de Características Destacadas
-    <section class="features-section">
-      <div class="container">
-        <div class="features-grid">
-          <div class="feature-card">
-            <div class="feature-icon">
-              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                <line x1="12" y1="18" x2="12.01" y2="18"></line>
-              </svg>
-            </div>
-            <h3 class="feature-title">Dynamic Island</h3>
-            <p class="feature-text">
-              Una nueva forma de interactuar con tu iPad. Notificaciones en vivo,
-              alertas y actividades en una experiencia fluida y mágica.
-            </p>
-          </div>
-
-          <div class="feature-card">
-            <div class="feature-icon">
-              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M12 6v6l4 2"></path>
-              </svg>
-            </div>
-            <h3 class="feature-title">Chip A18 Pro</h3>
-            <p class="feature-text">
-              Rendimiento extremo. El chip más avanzado en un smartphone con
-              velocidades impresionantes y eficiencia energética sin precedentes.
-            </p>
-          </div>
-
-          <div class="feature-card">
-            <div class="feature-icon">
-              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                <polyline points="21 15 16 10 5 21"></polyline>
-              </svg>
-            </div>
-            <h3 class="feature-title">Sistema de Cámaras Pro</h3>
-            <p class="feature-text">
-              Captura cada momento con calidad cinematográfica. Fotos de 48MP,
-              modo nocturno mejorado y video 4K ProRes.
-            </p>
-          </div>
-
-          <div class="feature-card">
-            <div class="feature-icon">
-              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-              </svg>
-            </div>
-            <h3 class="feature-title">Batería de Todo el Día</h3>
-            <p class="feature-text">
-              Hasta 29 horas de reproducción de video. Carga rápida,
-              carga inalámbrica y compatible con MagSafe.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section> -->
 
     <!-- Botón del carrito flotante -->
     <div v-if="totalItems > 0" class="floating-cart" @click="toggleCart">
@@ -302,7 +235,7 @@
           <div class="modal-info">
             <h2 class="modal-title">{{ selectedProduct?.name }}</h2>
             <div class="modal-category">
-              iPad
+              Mac
             </div>
             <p class="modal-description">
               {{ selectedProduct?.description }}
@@ -365,26 +298,23 @@ import { useProducts } from '@/composables/useProducts'
 import { useCategories } from '@/composables/useCategories'
 import { useCart } from '@/composables/useCart'
 import type { Product } from '@/composables/useProducts'
-
-
 import { useHead } from '@vueuse/head'
 
 useHead({
-  title: 'iPad Pro M3 y iPad Air | Apple Store Pro',
+  title: 'Navidad - Los Mejores Regalos para Estas Fiestas | SOYDANI',
   meta: [
     {
       name: 'description',
-      content: 'Explora la nueva línea de iPads con el potente iPad Pro y el versátil iPad Air. Tienda oficial Apple Store Pro Colombia.'
+      content: 'Celebra la magia de la Navidad con los mejores regalos. Decoración festiva, árboles de Navidad, luces, adornos navideños y productos exclusivos de temporada en SOYDANI.'
     },
-    { property: 'og:title', content: 'ipad, iPad Pro y iPad Air | Apple Store Pro' },
-    { property: 'og:description', content: 'Explora la nueva línea de iPads con el potente iPad Pro y el versátil iPad Air. Tienda oficial Apple Store Pro Colombia.' },
-    { property: 'og:image', content: 'https://www.mistorepro.com/images/ipadpro.jpg' },
-    { property: 'og:url', content: 'https://www.mistorepro.com/ipad' },
+    { property: 'og:title', content: 'Navidad - Los Mejores Regalos | SOYDANI' },
+    { property: 'og:description', content: 'Decoración navideña, árboles, luces y regalos especiales para estas fiestas en SOYDANI.' },
+    { property: 'og:image', content: 'https://www.soydani.com/images/navidad.jpg' },
+    { property: 'og:url', content: 'https://www.soydani.com/navidad' },
     { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:image', content: 'https://www.mistorepro.com/images/ipadpro.jpg' }
+    { name: 'twitter:image', content: 'https://www.soydani.com/images/navidad.jpg' }
   ]
 })
-
 
 const router = useRouter()
 const { regularProducts, loadProducts, showcaseProducts, loadShowcaseProducts } = useProducts()
@@ -406,35 +336,31 @@ const {
 
 const isLoadingProducts = ref(true)
 
-// Carrusel dinámico basado en productos de showcase de iPad
+// Carrusel dinámico basado en productos de showcase de Mac
 const currentSlide = ref(0)
 let autoplayInterval: number | null = null
 
-// Obtener la categoría de iPad
-const ipadCategory = computed(() => {
-  return categories.value.find(cat =>
-    cat.name.toLowerCase().includes('ipad') ||
-    cat.name.toLowerCase().includes('smartphone')
-  )
-})
+// Filtrar productos showcase de Navidad para el carrusel
+const christmasShowcaseProducts = computed(() => {
+  return showcaseProducts.value.filter(p => {
+    const categoryName = categories.value.find(cat => cat.id === p.category)?.name.toLowerCase() || ''
+    const productName = p.name.toLowerCase()
+    const productDesc = p.description.toLowerCase()
 
-// Filtrar productos showcase de iPad para el carrusel
-const ipadShowcaseProducts = computed(() => {
-  if (!ipadCategory.value) return []
-
-  return showcaseProducts.value.filter(p =>
-    p.category === ipadCategory.value!.id ||
-    p.category.toLowerCase().includes('ipad')
-  )
+    return categoryName.includes('navidad') || categoryName.includes('christmas') ||
+           categoryName.includes('árbol') || categoryName.includes('arbol') ||
+           productName.includes('navidad') || productName.includes('christmas') ||
+           productDesc.includes('navidad') || productDesc.includes('navideñ')
+  })
 })
 
 const nextSlide = () => {
-  const total = ipadShowcaseProducts.value.length || 1
+  const total = christmasShowcaseProducts.value.length || 1
   currentSlide.value = (currentSlide.value + 1) % total
 }
 
 const prevSlide = () => {
-  const total = ipadShowcaseProducts.value.length || 1
+  const total = christmasShowcaseProducts.value.length || 1
   currentSlide.value = (currentSlide.value - 1 + total) % total
 }
 
@@ -456,20 +382,23 @@ const stopAutoplay = () => {
   }
 }
 
-// Filtrar productos de iPad
-const ipadProducts = computed(() => {
-  if (!ipadCategory.value) return []
-
+// Filtrar productos de Navidad
+const christmasProducts = computed(() => {
   return regularProducts.value
     .filter(p => {
-      const categoryMatch = p.category === ipadCategory.value!.id
+      const categoryName = categories.value.find(cat => cat.id === p.category)?.name.toLowerCase() || ''
+      const productName = p.name.toLowerCase()
+      const productDesc = p.description.toLowerCase()
       const statusMatch = p.status === 'available' || p.status === 'coming-soon'
-      return categoryMatch && statusMatch
+
+      const isChristmas = categoryName.includes('navidad') || categoryName.includes('christmas') ||
+                         categoryName.includes('árbol') || categoryName.includes('arbol') ||
+                         productName.includes('navidad') || productName.includes('christmas') ||
+                         productDesc.includes('navidad') || productDesc.includes('navideñ')
+
+      return isChristmas && statusMatch
     })
-    .sort((a, b) => {
-      // Ordenar por precio de mayor a menor
-      return b.price - a.price
-    })
+    .sort((a, b) => b.price - a.price)
 })
 
 // Estado para el modal de producto
@@ -491,6 +420,11 @@ const closeModal = () => {
   showModal.value = false
   selectedProduct.value = null
   modalSelectedColor.value = ''
+}
+
+// Función para agregar al carrito (abre el modal)
+const handleAddToCart = (product: Product) => {
+  openProductModal(product)
 }
 
 // Función para ir al checkout
@@ -530,11 +464,6 @@ const addToCartFromModal = () => {
     addToCart(mappedProduct, 1, modalSelectedColor.value || undefined)
     closeModal()
   }
-}
-
-// Función obsoleta - ahora abre el modal
-const handleAddToCart = (product: Product) => {
-  openProductModal(product)
 }
 
 // Función para obtener el texto del estado del producto
@@ -611,7 +540,7 @@ onMounted(async () => {
     await loadShowcaseProducts()
     startAutoplay()
   } catch (error) {
-    console.error('Error cargando datos de iPad:', error)
+    console.error('Error cargando datos de Navidad:', error)
   } finally {
     isLoadingProducts.value = false
   }
@@ -625,7 +554,7 @@ onUnmounted(() => {
 
 <style scoped>
 /* === TEMA OSCURO === */
-.ipad-page {
+.christmas-page {
   min-height: 100vh;
   background: #000000;
   color: #f5f5f7;
@@ -708,6 +637,14 @@ onUnmounted(() => {
   animation: fadeInUp 0.6s ease-out 0.2s both;
 }
 
+.slide-description {
+  font-size: 1.0rem;
+  color: #a1a1a6;
+  line-height: 1.7;
+  max-width: 480px;
+  animation: fadeInUp 0.6s ease-out 0.3s both;
+}
+
 .shop-now-btn {
   display: inline-flex;
   align-items: center;
@@ -743,14 +680,6 @@ onUnmounted(() => {
 @keyframes bounce {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(5px); }
-}
-
-.slide-description {
-  font-size: 1.0rem;
-  color: #a1a1a6;
-  line-height: 1.7;
-  max-width: 480px;
-  animation: fadeInUp 0.6s ease-out 0.3s both;
 }
 
 .slide-image {
@@ -2146,5 +2075,4 @@ onUnmounted(() => {
   }
 }
 </style>
-
 
