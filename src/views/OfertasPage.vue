@@ -1,9 +1,9 @@
 <template>
-  <div class="airpods-page">
+  <div class="ofertas-page">
     <section class="hero-banner">
       <div class="carousel-container">
         <div class="carousel-track" :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
-          <div v-for="product in airpodsShowcaseProducts" :key="product.id" class="carousel-slide">
+          <div v-for="product in ofertasShowcaseProducts" :key="product.id" class="carousel-slide">
             <div class="slide-content">
               <div class="slide-text">
                 <h1 class="slide-title">{{ product.name }}</h1>
@@ -38,7 +38,7 @@
         <!-- Indicadores -->
         <div class="carousel-indicators">
           <button
-            v-for="(product, index) in airpodsShowcaseProducts"
+            v-for="(product, index) in ofertasShowcaseProducts"
             :key="product.id"
             class="indicator"
             :class="{ active: currentSlide === index }"
@@ -56,8 +56,8 @@
           <p>Cargando productos...</p>
         </div>
 
-        <div v-else-if="airpodsProducts.length > 0" class="products-container">
-          <div v-for="product in airpodsProducts" :key="product.id" class="product-card-modern" @click="handleAddToCart(product)">
+        <div v-else-if="ofertasProducts.length > 0" class="products-container">
+          <div v-for="product in ofertasProducts" :key="product.id" class="product-card-modern" @click="handleAddToCart(product)">
             <div class="product-visual">
               <img :src="product.images[0]" :alt="product.name" loading="lazy" class="product-image" />
             </div>
@@ -74,7 +74,7 @@
         </div>
 
         <div v-else class="empty-state">
-          <p>No hay AirPods disponibles en este momento</p>
+          <p>No hay ofertas disponibles en este momento</p>
         </div>
       </div>
     </section>
@@ -82,8 +82,16 @@
     <section class="info-section">
       <div class="container">
         <div class="info-content-centered">
-          <h2 class="info-title">¿Por qué elegir AirPods?</h2>
-          <p class="info-text">Sonido espacial, cancelación de ruido y emparejamiento instantáneo con tu ecosistema Apple.</p>
+          <h2 class="info-title">Ofertas - Los Mejores Precios en Todos los Productos</h2>
+          <p class="info-text">
+            ¡Aprovecha las mejores ofertas y descuentos especiales en todos nuestros productos!
+            Desde productos tecnológicos hasta artículos para el hogar, decoración navideña y mucho más.
+            Descuentos increíbles en una amplia variedad de categorías. Ofertas por tiempo limitado con
+            garantía de calidad, envío seguro y la mejor atención al cliente. Encuentra lo que buscas
+            al mejor precio del mercado sin sacrificar calidad. Ahorra en grande con nuestras
+            promociones exclusivas. Renueva, decora y equipa tu vida con productos de primera
+            a precios irresistibles. ¡No dejes pasar estas oportunidades únicas!
+          </p>
         </div>
       </div>
     </section>
@@ -264,23 +272,21 @@ import { useCategories } from '@/composables/useCategories'
 import { useCart } from '@/composables/useCart'
 import type { Product } from '@/composables/useProducts'
 import { useRouter } from 'vue-router'
-
-
 import { useHead } from '@vueuse/head'
 
 useHead({
-  title: 'AirPods Pro y AirPods Max y más | Apple Store Pro',
+  title: 'Ofertas - Los Mejores Precios en Todos los Productos | SOYDANI',
   meta: [
     {
       name: 'description',
-      content: 'Descubre los AirPods Pro con cancelación de ruido y los AirPods Max. Audio de alta fidelidad y diseño premium. Tienda oficial Apple Store Pro Colombia.'
+      content: 'Aprovecha las mejores ofertas y descuentos especiales. Desde tecnología hasta hogar, decoración navideña y más. ¡Ofertas por tiempo limitado en SOYDANI!'
     },
-    { property: 'og:title', content: 'AirPods Pro y AirPods Max | Apple Store Pro' },
-    { property: 'og:description', content: 'Descubre y compra los AirPods Pro con cancelación de ruido y los AirPods Max. Audio de alta fidelidad y diseño premium. Tienda oficial Apple Store Pro Colombia.' },
-    { property: 'og:image', content: 'https://www.mistorepro.com/images/airpods.jpg' },
-    { property: 'og:url', content: 'https://www.mistorepro.com/airpods' },
+    { property: 'og:title', content: 'Ofertas - Los Mejores Precios | SOYDANI' },
+    { property: 'og:description', content: 'Descuentos especiales en todas las categorías. Ofertas por tiempo limitado en SOYDANI.' },
+    { property: 'og:image', content: 'https://www.soydani.com/images/ofertas.jpg' },
+    { property: 'og:url', content: 'https://www.soydani.com/ofertas' },
     { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:image', content: 'https://www.mistorepro.com/images/airpods.jpg' }
+    { name: 'twitter:image', content: 'https://www.soydani.com/images/ofertas.jpg' }
   ]
 })
 
@@ -311,64 +317,29 @@ const selectedProduct = ref<Product | null>(null)
 const modalSelectedColor = ref('')
 const selectedImageIndex = ref(0)
 
-// Encontrar la categoría de AirPods
-const airpodsCategory = computed(() => {
-  // Esperar a que las categorías estén cargadas
-  if (categories.value.length === 0) return null
-
-  return categories.value.find(cat => {
-    const name = cat.name.toLowerCase()
-    // Buscar coincidencia exacta primero
-    return name === 'airpods' || name === 'airpod' || name.startsWith('airpod')
-  })
+// Filtrar productos showcase en oferta (con descuento)
+const ofertasShowcaseProducts = computed(() => {
+  return showcaseProducts.value.filter(p => p.originalPrice && p.originalPrice > p.price)
 })
 
-// Filtrar productos showcase de AirPods
-const airpodsShowcaseProducts = computed(() => {
-  // Si no hay productos showcase, devolver array vacío
-  if (showcaseProducts.value.length === 0) return []
-
-  // Si no encontramos la categoría, filtrar por nombre/categoría
-  if (!airpodsCategory.value) {
-    return showcaseProducts.value.filter(p => {
-      const name = String(p.name || '').toLowerCase()
-      const cat = String(p.category || '').toLowerCase()
-      return cat.includes('airpod') || name.includes('airpod')
+// Filtrar productos regulares en oferta (con descuento)
+const ofertasProducts = computed(() => {
+  return regularProducts.value
+    .filter(p => {
+      const hasDiscount = p.originalPrice && p.originalPrice > p.price
+      const statusMatch = p.status === 'available' || p.status === 'coming-soon'
+      return hasDiscount && statusMatch
     })
-  }
-
-  // Si tenemos la categoría, filtrar por ID primero
-  return showcaseProducts.value.filter(p => {
-    if (p.category === airpodsCategory.value!.id) return true
-    const name = String(p.name || '').toLowerCase()
-    return name.includes('airpod')
-  })
-})
-
-// Filtrar productos regulares de AirPods
-const airpodsProducts = computed(() => {
-  // Si no hay productos regulares, devolver array vacío
-  if (regularProducts.value.length === 0) return []
-
-  // Si no encontramos la categoría, filtrar por nombre/categoría
-  if (!airpodsCategory.value) {
-    return regularProducts.value.filter(p => {
-      const name = String(p.name || '').toLowerCase()
-      const cat = String(p.category || '').toLowerCase()
-      return cat.includes('airpod') || name.includes('airpod')
+    .sort((a, b) => {
+      // Ordenar por porcentaje de descuento (mayor descuento primero)
+      const discountA = a.originalPrice ? ((a.originalPrice - a.price) / a.originalPrice) * 100 : 0
+      const discountB = b.originalPrice ? ((b.originalPrice - b.price) / b.originalPrice) * 100 : 0
+      return discountB - discountA
     })
-  }
-
-  // Si tenemos la categoría, filtrar por ID primero
-  return regularProducts.value.filter(p => {
-    if (p.category === airpodsCategory.value!.id) return true
-    const name = String(p.name || '').toLowerCase()
-    return name.includes('airpod')
-  })
 })
 
-const prevSlide = () => { const total = airpodsShowcaseProducts.value.length || 1; currentSlide.value = (currentSlide.value - 1 + total) % total }
-const nextSlide = () => { const total = airpodsShowcaseProducts.value.length || 1; currentSlide.value = (currentSlide.value + 1) % total }
+const prevSlide = () => { const total = ofertasShowcaseProducts.value.length || 1; currentSlide.value = (currentSlide.value - 1 + total) % total }
+const nextSlide = () => { const total = ofertasShowcaseProducts.value.length || 1; currentSlide.value = (currentSlide.value + 1) % total }
 const goToSlide = (i: number) => { currentSlide.value = i }
 
 const startAutoplay = () => { autoplayInterval = window.setInterval(() => nextSlide(), 5000) }
@@ -516,7 +487,7 @@ onUnmounted(() => stopAutoplay())
 
 <style scoped>
 /* === TEMA OSCURO === */
-.airpods-page {
+.ofertas-page {
   min-height: 100vh;
   background: #000000;
   color: #f5f5f7;

@@ -1,14 +1,14 @@
 <template>
-  <title>iPhone 17 pro, 17 pro max y mucho más | Apple Store Pro</title>
-  <meta name="description" content="Compra iPhone 17, iPhone 16, iPhone 15, iPhone 14 y muchos más en Apple Store Pro. Tecnología Apple original con garantía y precios especiales.">
-  <div class="iphone-page">
+  <title>Tecnología - Lo Último en Innovación | SOYDANI</title>
+  <meta name="description" content="Descubre lo último en tecnología: iPhone, Mac, iPad, Apple Watch y más. Productos innovadores con garantía y los mejores precios en SOYDANI.">
+  <div class="technology-page">
     <!-- Hero Banner Section con Carrusel -->
     <section class="hero-banner">
       <div class="carousel-container">
-        <!-- Slides del carrusel dinámicos desde productos de showcase de iPhone -->
+        <!-- Slides del carrusel dinámicos desde productos de showcase de Tecnología -->
         <div class="carousel-track" :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
           <div
-            v-for="product in iphoneShowcaseProducts"
+            v-for="product in technologyShowcaseProducts"
             :key="product.id"
             class="carousel-slide"
           >
@@ -50,7 +50,7 @@
         <!-- Indicadores -->
         <div class="carousel-indicators">
           <button
-            v-for="(product, index) in iphoneShowcaseProducts"
+            v-for="(product, index) in technologyShowcaseProducts"
             :key="product.id"
             class="indicator"
             :class="{ active: currentSlide === index }"
@@ -64,14 +64,75 @@
     <!-- Productos Disponibles Section -->
     <section class="products-section">
       <div class="container">
-        <div v-if="isLoadingProducts" class="loading-state">
-          <div class="spinner"></div>
-          <p>Cargando productos...</p>
+        <!-- Filtros -->
+        <div class="filters-bar">
+          <div class="filters-group">
+            <div class="filter-item">
+              <label for="sort-select">Ordenar por:</label>
+              <select id="sort-select" v-model="sortBy" class="filter-select">
+                <option value="price-desc">Precio: Mayor a Menor</option>
+                <option value="price-asc">Precio: Menor a Mayor</option>
+                <option value="name-asc">Nombre: A-Z</option>
+                <option value="name-desc">Nombre: Z-A</option>
+              </select>
+            </div>
+
+            <div class="filter-item">
+              <label for="status-select">Disponibilidad:</label>
+              <select id="status-select" v-model="filterStatus" class="filter-select">
+                <option value="all">Todos</option>
+                <option value="available">Disponibles</option>
+                <option value="coming-soon">Próximamente</option>
+              </select>
+            </div>
+
+            <div class="filter-item price-range">
+              <label>Rango de precio:</label>
+              <div class="price-inputs">
+                <input
+                  type="number"
+                  v-model.number="minPrice"
+                  placeholder="Mín"
+                  class="price-input"
+                  min="0"
+                />
+                <span>-</span>
+                <input
+                  type="number"
+                  v-model.number="maxPrice"
+                  placeholder="Máx"
+                  class="price-input"
+                  min="0"
+                />
+              </div>
+            </div>
+
+            <button @click="clearFilters" class="clear-filters-btn">
+              Limpiar filtros
+            </button>
+          </div>
+
+          <div class="results-count">
+            {{ filteredAndSortedProducts.length }} productos encontrados
+          </div>
         </div>
 
-        <div v-else-if="iphoneProducts.length > 0" class="products-container">
+        <!-- Skeleton Loaders -->
+        <div v-if="isLoadingProducts" class="products-container">
+          <div v-for="n in 6" :key="n" class="product-card-skeleton">
+            <div class="skeleton-image"></div>
+            <div class="skeleton-content">
+              <div class="skeleton-title"></div>
+              <div class="skeleton-description"></div>
+              <div class="skeleton-price"></div>
+              <div class="skeleton-button"></div>
+            </div>
+          </div>
+        </div>
+
+        <div v-else-if="filteredAndSortedProducts.length > 0" class="products-container">
           <div
-            v-for="product in iphoneProducts"
+            v-for="product in filteredAndSortedProducts"
             :key="product.id"
             class="product-card-modern"
             @click="handleAddToCart(product)"
@@ -108,21 +169,28 @@
         </div>
 
         <div v-else class="empty-state">
-          <p>No hay iPhones disponibles en este momento</p>
+          <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <h3>No se encontraron productos</h3>
+          <p>Intenta ajustar los filtros o explora otras categorías</p>
+          <button @click="clearFilters" class="btn-primary">Limpiar filtros</button>
         </div>
       </div>
     </section>
 
-    <!-- Sección Informativa -->
+    <!-- Sección Informativa - Tecnología -->
     <section class="info-section">
       <div class="container">
         <div class="info-content-centered">
-          <h2 class="info-title">¿Por qué elegir iPhone?</h2>
+          <h2 class="info-title">Tecnología - Lo Último en Innovación</h2>
           <p class="info-text">
-            La combinación perfecta de rendimiento, diseño y seguridad. Con el chip A18 Pro,
-            cámaras de nivel profesional y un ecosistema que funciona en perfecta armonía con
-            todos tus dispositivos Apple. Actualizaciones garantizadas por años y la privacidad
-            más avanzada del mercado.
+            Descubre lo último en tecnología con los productos más innovadores del mercado. Desde smartphones
+            de última generación hasta computadoras de alto rendimiento, tablets versátiles y accesorios
+            inteligentes. Experimenta la perfecta combinación de diseño, rendimiento y funcionalidad.
+            Productos con garantía oficial, actualizaciones garantizadas y el mejor soporte técnico para
+            mantenerte siempre a la vanguardia de la innovación tecnológica.
           </p>
         </div>
       </div>
@@ -374,18 +442,18 @@ const { regularProducts, loadProducts, showcaseProducts, loadShowcaseProducts } 
 const { categories, loadCategories } = useCategories()
 
 useHead({
-  title: 'iPhone 17 Pro, 17 Pro Max y mucho más | Apple Store Pro',
+  title: 'Tecnología - Lo Último en Innovación | SOYDANI',
   meta: [
     {
       name: 'description',
-      content: 'Compra iPhone 17, iPhone 16, iPhone 15, iPhone 14 y muchos más en Apple Store Pro. Tecnología Apple original con garantía y precios especiales.'
+      content: 'Descubre lo último en tecnología: iPhone, Mac, iPad, Apple Watch y más. Productos innovadores con garantía y los mejores precios en SOYDANI.'
     },
-    { property: 'og:title', content: 'iPhone 17 Pro, 17 Pro Max y mucho más | Apple Store Pro' },
-    { property: 'og:description', content: 'Compra iPhone 17, iPhone 16, iPhone 15, iPhone 14 y muchos más en Apple Store Pro. Tecnología Apple original con garantía y precios especiales.' },
-    { property: 'og:image', content: 'https://www.mistorepro.com/images/iphone17pro.jpg' },
-    { property: 'og:url', content: 'https://www.mistorepro.com/iphone' },
+    { property: 'og:title', content: 'Tecnología - Lo Último en Innovación | SOYDANI' },
+    { property: 'og:description', content: 'Descubre lo último en tecnología: iPhone, Mac, iPad, Apple Watch y más. Productos innovadores en SOYDANI.' },
+    { property: 'og:image', content: 'https://www.soydani.com/images/tecnologia.jpg' },
+    { property: 'og:url', content: 'https://www.soydani.com/iphone' },
     { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:image', content: 'https://www.mistorepro.com/images/iphone17pro.jpg' }
+    { name: 'twitter:image', content: 'https://www.soydani.com/images/tecnologia.jpg' }
   ]
 })
 
@@ -409,31 +477,28 @@ const isLoadingProducts = ref(true)
 const currentSlide = ref(0)
 let autoplayInterval: number | null = null
 
-// Obtener la categoría de iPhone
-const iphoneCategory = computed(() => {
-  return categories.value.find(cat =>
-    cat.name.toLowerCase().includes('iphone') ||
-    cat.name.toLowerCase().includes('smartphone')
-  )
-})
+// Filtrar productos showcase de Tecnología para el carrusel
+const technologyShowcaseProducts = computed(() => {
+  return showcaseProducts.value.filter(p => {
+    const categoryName = categories.value.find(cat => cat.id === p.category)?.name.toLowerCase() || ''
+    const productName = p.name.toLowerCase()
 
-// Filtrar productos showcase de iPhone para el carrusel
-const iphoneShowcaseProducts = computed(() => {
-  if (!iphoneCategory.value) return []
-
-  return showcaseProducts.value.filter(p =>
-    p.category === iphoneCategory.value!.id ||
-    p.category.toLowerCase().includes('iphone')
-  )
+    // Incluir iPhone, Mac, iPad, Apple Watch, AirPods, tecnología
+    return categoryName.includes('iphone') || categoryName.includes('mac') ||
+           categoryName.includes('ipad') || categoryName.includes('watch') ||
+           categoryName.includes('airpod') || categoryName.includes('tecnolog') ||
+           categoryName.includes('tech') || productName.includes('iphone') ||
+           productName.includes('macbook') || productName.includes('ipad')
+  })
 })
 
 const nextSlide = () => {
-  const total = iphoneShowcaseProducts.value.length || 1
+  const total = technologyShowcaseProducts.value.length || 1
   currentSlide.value = (currentSlide.value + 1) % total
 }
 
 const prevSlide = () => {
-  const total = iphoneShowcaseProducts.value.length || 1
+  const total = technologyShowcaseProducts.value.length || 1
   currentSlide.value = (currentSlide.value - 1 + total) % total
 }
 
@@ -455,21 +520,74 @@ const stopAutoplay = () => {
   }
 }
 
-// Filtrar productos de iPhone
-const iphoneProducts = computed(() => {
-  if (!iphoneCategory.value) return []
+// Estados para filtros
+const sortBy = ref('price-desc')
+const filterStatus = ref('all')
+const minPrice = ref<number | null>(null)
+const maxPrice = ref<number | null>(null)
 
+// Filtrar productos de Tecnología (iPhone, Mac, iPad, Watch, AirPods)
+const technologyProducts = computed(() => {
   return regularProducts.value
     .filter(p => {
-      const categoryMatch = p.category === iphoneCategory.value!.id
+      const categoryName = categories.value.find(cat => cat.id === p.category)?.name.toLowerCase() || ''
+      const productName = p.name.toLowerCase()
       const statusMatch = p.status === 'available' || p.status === 'coming-soon'
-      return categoryMatch && statusMatch
-    })
-    .sort((a, b) => {
-      // Ordenar por precio de mayor a menor
-      return b.price - a.price
+
+      // Incluir todos los productos tecnológicos
+      const isTech = categoryName.includes('iphone') || categoryName.includes('mac') ||
+                     categoryName.includes('ipad') || categoryName.includes('watch') ||
+                     categoryName.includes('airpod') || categoryName.includes('tecnolog') ||
+                     categoryName.includes('tech') || productName.includes('iphone') ||
+                     productName.includes('macbook') || productName.includes('ipad')
+
+      return isTech && statusMatch
     })
 })
+
+// Productos filtrados y ordenados
+const filteredAndSortedProducts = computed(() => {
+  let filtered = [...technologyProducts.value]
+
+  // Filtrar por estado
+  if (filterStatus.value !== 'all') {
+    filtered = filtered.filter(p => p.status === filterStatus.value)
+  }
+
+  // Filtrar por rango de precio
+  if (minPrice.value !== null && minPrice.value > 0) {
+    filtered = filtered.filter(p => p.price >= minPrice.value!)
+  }
+  if (maxPrice.value !== null && maxPrice.value > 0) {
+    filtered = filtered.filter(p => p.price <= maxPrice.value!)
+  }
+
+  // Ordenar
+  switch (sortBy.value) {
+    case 'price-asc':
+      filtered.sort((a, b) => a.price - b.price)
+      break
+    case 'price-desc':
+      filtered.sort((a, b) => b.price - a.price)
+      break
+    case 'name-asc':
+      filtered.sort((a, b) => a.name.localeCompare(b.name))
+      break
+    case 'name-desc':
+      filtered.sort((a, b) => b.name.localeCompare(a.name))
+      break
+  }
+
+  return filtered
+})
+
+// Limpiar filtros
+const clearFilters = () => {
+  sortBy.value = 'price-desc'
+  filterStatus.value = 'all'
+  minPrice.value = null
+  maxPrice.value = null
+}
 
 // Estado para el modal de producto
 const showModal = ref(false)
@@ -610,7 +728,7 @@ onMounted(async () => {
     await loadShowcaseProducts()
     startAutoplay()
   } catch (error) {
-    console.error('Error cargando datos de iPhone:', error)
+    console.error('Error cargando datos de Tecnología:', error)
   } finally {
     isLoadingProducts.value = false
   }
@@ -624,7 +742,7 @@ onUnmounted(() => {
 
 <style scoped>
 /* === TEMA OSCURO === */
-.iphone-page {
+.technology-page {
   min-height: 100vh;
   background: #000000;
   color: #f5f5f7;
@@ -2142,6 +2260,273 @@ onUnmounted(() => {
     font-size: 0.9rem;
     padding: 0.3rem;
     min-width: 24px;
+  }
+}
+
+/* Estilos para filtros */
+.filters-bar {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.filters-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-item label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filter-select,
+.price-input {
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.filter-select:focus,
+.price-input:focus {
+  border-color: var(--primary-red);
+  box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.1);
+}
+
+.filter-select option {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.price-input[type="number"]::-webkit-inner-spin-button,
+.price-input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.filter-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.results-count {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+
+.results-count strong {
+  color: var(--primary-red);
+  font-weight: 700;
+}
+
+.clear-filters-btn {
+  padding: 0.625rem 1.25rem;
+  background: rgba(229, 9, 20, 0.1);
+  border: 1px solid var(--primary-red);
+  color: var(--primary-red);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.clear-filters-btn:hover {
+  background: var(--primary-red);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(229, 9, 20, 0.3);
+}
+
+/* Estilos para skeleton loaders */
+.product-card-skeleton {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  position: relative;
+}
+
+.product-card-skeleton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.skeleton-image {
+  width: 100%;
+  height: 250px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skeleton-title {
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  width: 70%;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-description {
+  height: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  width: 90%;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  animation-delay: 0.1s;
+}
+
+.skeleton-price {
+  height: 28px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  width: 40%;
+  margin-top: 0.5rem;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  animation-delay: 0.2s;
+}
+
+.skeleton-button {
+  height: 48px;
+  background: rgba(229, 9, 20, 0.2);
+  border-radius: 12px;
+  width: 100%;
+  margin-top: 1rem;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  animation-delay: 0.3s;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.empty-state-icon {
+  margin: 0 auto 1.5rem;
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.75rem;
+}
+
+.empty-state p {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 1.5rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.empty-state .clear-filters-btn {
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  .filters-bar {
+    padding: 1rem;
+  }
+
+  .filters-group {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .filter-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .results-count {
+    text-align: center;
+  }
+
+  .clear-filters-btn {
+    width: 100%;
+  }
+
+  .skeleton-image {
+    height: 200px;
+  }
+
+  .empty-state {
+    padding: 3rem 1.5rem;
+  }
+
+  .empty-state h3 {
+    font-size: 1.25rem;
+  }
+
+  .empty-state p {
+    font-size: 0.9rem;
   }
 }
 </style>

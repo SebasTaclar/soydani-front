@@ -6,14 +6,7 @@
         <div class="footer-grid">
           <!-- Sección de marca -->
           <div class="brand-section">
-            <div class="creative-logo-footer">
-              <div class="logo-circle-footer">
-                <span class="logo-letter-footer">S</span>
-                <span class="logo-letter-footer">D</span>
-              </div>
-              <div class="logo-glow-footer"></div>
-            </div>
-            <h2 class="footer-brand-title">SOYDANI</h2>
+            <img src="/images/logo.png" alt="SOYDANI Logo" class="footer-brand-logo" />
             <p class="footer-tagline">Tu tienda virtual de confianza</p>
             <p class="footer-description">
               Tecnología, decoración navideña y artículos para el hogar.
@@ -25,10 +18,10 @@
           <div class="footer-column">
             <h3 class="column-title">Categorías</h3>
             <ul class="footer-links">
-              <li><a href="#tecnologia">📱 Tecnología</a></li>
-              <li><a href="#navidad">🎄 Navidad</a></li>
-              <li><a href="#hogar">🏠 Hogar</a></li>
-              <li><a href="#ofertas">🔥 Ofertas</a></li>
+              <li><RouterLink to="/iphone">📱 Tecnología</RouterLink></li>
+              <li><RouterLink to="/mac">🎄 Navidad</RouterLink></li>
+              <li><RouterLink to="/ipad">🏠 Hogar</RouterLink></li>
+              <li><RouterLink to="/watch">🔥 Ofertas</RouterLink></li>
             </ul>
           </div>
 
@@ -162,95 +155,29 @@
 .brand-section {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: 1.5rem;
 }
 
-/* Logo creativo del footer */
-.creative-logo-footer {
-  position: relative;
-  width: 140px;
+/* Logo imagen del footer */
+.footer-brand-logo {
   height: 140px;
-  margin-bottom: 1rem;
-}
-
-.logo-circle-footer {
-  width: 140px;
-  height: 140px;
-  background: linear-gradient(135deg, var(--primary-red) 0%, #a10000 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  border: 4px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 12px 32px rgba(220, 38, 38, 0.5),
-              0 0 60px rgba(220, 38, 38, 0.3),
-              inset 0 4px 16px rgba(255, 255, 255, 0.2);
-  animation: logoFloatFooter 4s ease-in-out infinite;
+  width: auto;
+  object-fit: contain;
   transition: all 0.3s ease;
+  filter: drop-shadow(0 8px 20px rgba(220, 38, 38, 0.5));
+  margin-bottom: 0.5rem;
+  border-radius: 20px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
 }
 
-.logo-circle-footer::before {
-  content: '';
-  position: absolute;
-  inset: -6px;
-  background: linear-gradient(135deg, var(--primary-red) 0%, #a10000 100%);
-  border-radius: 50%;
-  z-index: 0;
-}
-
-.logo-circle-footer::after {
-  content: '';
-  position: absolute;
-  inset: 6px;
-  background: linear-gradient(135deg, rgba(220, 38, 38, 0.8) 0%, rgba(161, 0, 0, 0.9) 100%);
-  border-radius: 50%;
-  z-index: 1;
-}
-
-.logo-letter-footer {
-  position: relative;
-  z-index: 2;
-  font-weight: 900;
-  font-size: 36px;
-  color: var(--white);
-  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.5),
-               0 0 30px rgba(255, 255, 255, 0.3);
-  letter-spacing: -2px;
-}
-
-.logo-letter-footer:first-child::after {
-  content: '•';
-  margin: 0 4px;
-  font-size: 20px;
-  opacity: 0.6;
-}
-
-.logo-glow-footer {
-  position: absolute;
-  inset: -20px;
-  background: radial-gradient(circle, rgba(220, 38, 38, 0.4) 0%, transparent 70%);
-  border-radius: 50%;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-
-.creative-logo-footer:hover .logo-circle-footer {
+.footer-brand-logo:hover {
   transform: scale(1.05);
-  box-shadow: 0 16px 40px rgba(220, 38, 38, 0.6),
-              0 0 80px rgba(220, 38, 38, 0.4),
-              inset 0 4px 20px rgba(255, 255, 255, 0.3);
-}
-
-.creative-logo-footer:hover .logo-glow-footer {
-  opacity: 1;
-}
-
-@keyframes logoFloatFooter {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-8px) rotate(2deg); }
+  filter: drop-shadow(0 12px 28px rgba(220, 38, 38, 0.7));
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .footer-brand-title {
@@ -275,6 +202,7 @@
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 1px;
+  text-align: center;
 }
 
 .footer-description {
@@ -282,7 +210,8 @@
   line-height: 1.8;
   color: rgba(255, 255, 255, 0.8);
   margin: 0;
-  max-width: 90%;
+  max-width: 100%;
+  text-align: center;
 }
 
 /* Columnas de enlaces */
@@ -363,63 +292,32 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  list-style: none;
 }
 
-.contact-item {
+.contact-list li {
   display: flex;
-  align-items: flex-start;
-  gap: 0.8rem;
-  padding: 0.8rem;
-  background: rgba(220, 38, 38, 0.08);
-  border-radius: 10px;
-  border: 1px solid rgba(220, 38, 38, 0.15);
+  align-items: center;
+  gap: 0.75rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
   transition: all 0.3s ease;
+  padding: 0.5rem 0;
 }
 
-.contact-item:hover {
-  background: rgba(220, 38, 38, 0.12);
-  border-color: var(--primary-red);
+.contact-list li:hover {
+  color: rgba(255, 255, 255, 1);
   transform: translateX(5px);
 }
 
-.contact-icon {
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, var(--primary-red) 0%, #a10000 100%);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.contact-list li svg {
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+  color: rgba(255, 255, 255, 0.5);
+  transition: color 0.3s ease;
 }
 
-.contact-icon svg {
-  width: 18px;
-  height: 18px;
-  color: var(--white);
-}
-
-.contact-text {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  flex: 1;
-}
-
-.contact-label {
-  font-size: 0.75rem;
+.contact-list li:hover svg {
   color: var(--primary-red);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.contact-value {
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 0.9rem;
-  font-weight: 500;
-  line-height: 1.4;
 }
 
 /* Grid de redes sociales */
@@ -459,33 +357,23 @@
 }
 
 .social-link-footer:hover {
-  background: rgba(220, 38, 38, 0.15);
-  border-color: var(--primary-red);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.35);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
 }
 
-.social-icon-footer {
-  width: 42px;
-  height: 42px;
-  background: linear-gradient(135deg, var(--primary-red) 0%, #a10000 100%);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.social-link-footer svg {
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
-  transition: transform 0.3s ease;
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.3s ease;
 }
 
-.social-link-footer:hover .social-icon-footer {
-  transform: scale(1.1) rotate(5deg);
-}
-
-.social-icon-footer svg {
-  width: 20px;
-  height: 20px;
+.social-link-footer:hover svg {
   color: var(--white);
+  transform: scale(1.1);
 }
 
 .social-info-footer {
@@ -497,7 +385,7 @@
 
 .social-name-footer {
   font-size: 0.75rem;
-  color: var(--primary-red);
+  color: rgba(255, 255, 255, 0.5);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -508,6 +396,10 @@
   font-size: 0.95rem;
   font-weight: 600;
   line-height: 1.3;
+}
+
+.social-link-footer:hover .social-name-footer {
+  color: var(--primary-red);
 }
 
 /* Barra inferior */
@@ -699,3 +591,7 @@
   }
 }
 </style>
+
+<script setup lang="ts">
+import { RouterLink } from 'vue-router'
+</script>
