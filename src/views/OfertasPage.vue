@@ -3,13 +3,13 @@
     <section class="hero-banner">
       <div class="carousel-container">
         <div class="carousel-track" :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
-          <div v-for="product in ofertasShowcaseProducts" :key="product.id" class="carousel-slide">
+          <div v-for="(banner, index) in ofertasBanners" :key="index" class="carousel-slide">
             <div class="slide-content">
               <div class="slide-text">
-                <h1 class="slide-title">{{ product.name }}</h1>
-                <p class="slide-subtitle">{{ product.description }}</p>
+                <h1 class="slide-title">{{ banner.title }}</h1>
+                <p class="slide-subtitle">{{ banner.subtitle }}</p>
                 <button @click="scrollToProducts" class="shop-now-btn">
-                  Compra ahora
+                  Ver ofertas
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="m7 13 5 5 5-5"/>
                     <path d="m7 6 5 5 5-5"/>
@@ -17,7 +17,7 @@
                 </button>
               </div>
               <div class="slide-image">
-                <img :src="product.image" :alt="product.name" loading="lazy" />
+                <img :src="banner.image" :alt="banner.title" loading="lazy" />
               </div>
             </div>
           </div>
@@ -38,12 +38,12 @@
         <!-- Indicadores -->
         <div class="carousel-indicators">
           <button
-            v-for="(product, index) in ofertasShowcaseProducts"
-            :key="product.id"
+            v-for="(banner, index) in ofertasBanners"
+            :key="index"
             class="indicator"
             :class="{ active: currentSlide === index }"
             @click="goToSlide(index)"
-            :aria-label="`Ir a ${product.name}`"
+            :aria-label="`Ir a slide ${index + 1}`"
           ></button>
         </div>
       </div>
@@ -51,24 +51,98 @@
 
     <section class="products-section">
       <div class="container">
+        <!-- Filtros -->
+        <div class="filters-bar">
+          <div class="filters-group">
+            <div class="filter-item">
+              <label for="sort-select">Ordenar por:</label>
+              <select id="sort-select" v-model="sortBy" class="filter-select">
+                <option value="price-desc">Precio: Mayor a Menor</option>
+                <option value="price-asc">Precio: Menor a Mayor</option>
+                <option value="name-asc">Nombre: A-Z</option>
+                <option value="name-desc">Nombre: Z-A</option>
+              </select>
+            </div>
+
+            <div class="filter-item">
+              <label for="status-select">Disponibilidad:</label>
+              <select id="status-select" v-model="filterStatus" class="filter-select">
+                <option value="all">Todos</option>
+                <option value="available">Disponibles</option>
+                <option value="coming-soon">Próximamente</option>
+              </select>
+            </div>
+
+            <div class="filter-item price-range">
+              <label>Rango de precio:</label>
+              <div class="price-inputs">
+                <input
+                  type="number"
+                  v-model.number="minPrice"
+                  placeholder="Mín"
+                  class="price-input"
+                  min="0"
+                />
+                <span>-</span>
+                <input
+                  type="number"
+                  v-model.number="maxPrice"
+                  placeholder="Máx"
+                  class="price-input"
+                  min="0"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <div class="results-count">
+              {{ filteredAndSortedProducts.length }} productos encontrados
+            </div>
+            <button @click="clearFilters" class="clear-filters-btn">
+              Limpiar filtros
+            </button>
+          </div>
+        </div>
+
         <div v-if="isLoadingProducts" class="loading-state">
           <div class="spinner"></div>
           <p>Cargando productos...</p>
         </div>
 
-        <div v-else-if="ofertasProducts.length > 0" class="products-container">
-          <div v-for="product in ofertasProducts" :key="product.id" class="product-card-modern" @click="handleAddToCart(product)">
+        <div v-else-if="filteredAndSortedProducts.length > 0" class="products-container">
+          <div
+            v-for="product in filteredAndSortedProducts"
+            :key="product.id"
+            class="product-card-modern"
+            @click="handleAddToCart(product)"
+          >
+            <!-- Imagen del producto -->
             <div class="product-visual">
-              <img :src="product.images[0]" :alt="product.name" loading="lazy" class="product-image" />
+              <img
+                :src="product.images[0]"
+                :alt="product.name"
+                loading="lazy"
+                decoding="async"
+                class="product-image"
+              />
             </div>
+
+            <!-- Información del producto -->
             <div class="product-details">
               <h2 class="product-title">{{ product.name }}</h2>
               <p class="product-tagline">{{ product.description }}</p>
+
               <div class="product-pricing">
                 <span class="product-price">Precio ${{ product.price.toLocaleString() }}</span>
-                <span v-if="product.originalPrice" class="product-price-original">${{ product.originalPrice.toLocaleString() }}</span>
+                <span v-if="product.originalPrice" class="product-price-original">
+                  ${{ product.originalPrice.toLocaleString() }}
+                </span>
               </div>
-              <button class="product-btn" @click.stop="handleAddToCart(product)">Comprar</button>
+
+              <button class="product-btn" @click.stop="handleAddToCart(product)">
+                Comprar
+              </button>
             </div>
           </div>
         </div>
@@ -106,25 +180,45 @@
           </svg>
         </button>
         <div class="modal-body">
-          <div class="modal-image">
-            <div class="image-gallery">
+          <div class="modal-image-container">
+            <div class="modal-image">
               <img
-                v-for="(image, index) in selectedProduct?.images"
-                :key="index"
-                :src="image"
-                :alt="`${selectedProduct?.name} - ${index + 1}`"
-                :class="{ active: selectedImageIndex === index }"
-                @click="selectedImageIndex = index"
+                :src="selectedProduct?.images[selectedImageIndex]"
+                :alt="`${selectedProduct?.name} - ${selectedImageIndex + 1}`"
                 loading="lazy"
                 decoding="async"
               />
             </div>
-            <div v-if="selectedProduct?.images && selectedProduct.images.length > 1" class="image-dots">
+            <div v-if="selectedProduct?.images && selectedProduct.images.length > 1" class="image-navigation">
+              <button
+                class="nav-btn prev"
+                @click="previousImage"
+                :disabled="selectedImageIndex === 0"
+                aria-label="Imagen anterior"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="m15 18-6-6 6-6"/>
+                </svg>
+              </button>
+              <button
+                class="nav-btn next"
+                @click="nextImage"
+                :disabled="selectedImageIndex === (selectedProduct?.images.length || 1) - 1"
+                aria-label="Imagen siguiente"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="m9 18 6-6-6-6"/>
+                </svg>
+              </button>
+            </div>
+            <div v-if="selectedProduct?.images && selectedProduct.images.length > 1" class="image-indicators">
               <button
                 v-for="(image, index) in selectedProduct.images"
                 :key="index"
+                class="indicator"
                 :class="{ active: selectedImageIndex === index }"
                 @click="selectedImageIndex = index"
+                :aria-label="`Ver imagen ${index + 1}`"
               ></button>
             </div>
           </div>
@@ -156,13 +250,27 @@
                   :title="colorName"
                   :aria-label="'Color ' + colorName"
                 >
-                  <div
-                    class="color-circle"
-                    :style="{ backgroundColor: getColorHex(colorName), border: '2px solid ' + (modalSelectedColor === colorName ? '#26F7D7' : getColorHex(colorName)) }"
-                  ></div>
+                  <div class="color-circle" :style="{ backgroundColor: getColorHex(colorName) }">
+                    <svg v-if="modalSelectedColor === colorName" class="check-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                      <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                  </div>
                   <span class="color-name">{{ colorName }}</span>
                 </div>
               </div>
+            </div>
+
+            <!-- Indicador de color de imagen -->
+            <div v-else class="color-image-indicator">
+              <div class="image-color-badge">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <path d="m21 15-5-5L5 21"/>
+                </svg>
+                <span>Color de la imagen</span>
+              </div>
+              <p class="image-color-note">Este producto se muestra con el color de la imagen</p>
             </div>
 
             <!-- Estado del producto -->
@@ -317,10 +425,30 @@ const selectedProduct = ref<Product | null>(null)
 const modalSelectedColor = ref('')
 const selectedImageIndex = ref(0)
 
-// Filtrar productos showcase en oferta (con descuento)
-const ofertasShowcaseProducts = computed(() => {
-  return showcaseProducts.value.filter(p => p.originalPrice && p.originalPrice > p.price)
-})
+// Banners de ofertas con imágenes llamativas
+const ofertasBanners = [
+  {
+    title: '¡Mega Ofertas!',
+    subtitle: 'Hasta 50% de descuento en productos seleccionados',
+    image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&q=80'
+  },
+  {
+    title: 'Descuentos Increíbles',
+    subtitle: 'Ahorra en grande con nuestras promociones especiales',
+    image: 'https://images.unsplash.com/photo-1607083206968-13611e3d76db?w=800&q=80'
+  },
+  {
+    title: 'Ofertas Exclusivas',
+    subtitle: 'Los mejores precios en tecnología y más',
+    image: 'https://images.unsplash.com/photo-1607082349566-187342175e2f?w=800&q=80'
+  }
+]
+
+// Estados para los filtros
+const sortBy = ref('price-desc')
+const filterStatus = ref('all')
+const minPrice = ref<number | null>(null)
+const maxPrice = ref<number | null>(null)
 
 // Filtrar productos regulares en oferta (con descuento)
 const ofertasProducts = computed(() => {
@@ -330,16 +458,49 @@ const ofertasProducts = computed(() => {
       const statusMatch = p.status === 'available' || p.status === 'coming-soon'
       return hasDiscount && statusMatch
     })
-    .sort((a, b) => {
-      // Ordenar por porcentaje de descuento (mayor descuento primero)
-      const discountA = a.originalPrice ? ((a.originalPrice - a.price) / a.originalPrice) * 100 : 0
-      const discountB = b.originalPrice ? ((b.originalPrice - b.price) / b.originalPrice) * 100 : 0
-      return discountB - discountA
-    })
 })
 
-const prevSlide = () => { const total = ofertasShowcaseProducts.value.length || 1; currentSlide.value = (currentSlide.value - 1 + total) % total }
-const nextSlide = () => { const total = ofertasShowcaseProducts.value.length || 1; currentSlide.value = (currentSlide.value + 1) % total }
+// Productos filtrados y ordenados
+const filteredAndSortedProducts = computed(() => {
+  let filtered = [...ofertasProducts.value]
+
+  // Filtrar por estado
+  if (filterStatus.value !== 'all') {
+    filtered = filtered.filter(p => p.status === filterStatus.value)
+  }
+
+  // Filtrar por rango de precio
+  if (minPrice.value !== null && minPrice.value > 0) {
+    filtered = filtered.filter(p => p.price >= minPrice.value!)
+  }
+  if (maxPrice.value !== null && maxPrice.value > 0) {
+    filtered = filtered.filter(p => p.price <= maxPrice.value!)
+  }
+
+  // Ordenar
+  if (sortBy.value === 'price-asc') {
+    filtered.sort((a, b) => a.price - b.price)
+  } else if (sortBy.value === 'price-desc') {
+    filtered.sort((a, b) => b.price - a.price)
+  } else if (sortBy.value === 'name-asc') {
+    filtered.sort((a, b) => a.name.localeCompare(b.name))
+  } else if (sortBy.value === 'name-desc') {
+    filtered.sort((a, b) => b.name.localeCompare(a.name))
+  }
+
+  return filtered
+})
+
+// Limpiar filtros
+const clearFilters = () => {
+  sortBy.value = 'price-desc'
+  filterStatus.value = 'all'
+  minPrice.value = null
+  maxPrice.value = null
+}
+
+const prevSlide = () => { const total = ofertasBanners.length; currentSlide.value = (currentSlide.value - 1 + total) % total }
+const nextSlide = () => { const total = ofertasBanners.length; currentSlide.value = (currentSlide.value + 1) % total }
 const goToSlide = (i: number) => { currentSlide.value = i }
 
 const startAutoplay = () => { autoplayInterval = window.setInterval(() => nextSlide(), 5000) }
@@ -353,52 +514,112 @@ const scrollToProducts = () => {
 // Funciones del modal
 const openProductModal = (product: Product) => {
   selectedProduct.value = product
-  modalSelectedColor.value = ''
+  // Si el producto no tiene colores seleccionables, indicar que es color de imagen
+  if (!product.colors || product.colors.length === 0) {
+    modalSelectedColor.value = 'COLOR_DE_IMAGEN'
+  } else {
+    modalSelectedColor.value = ''
+  }
   selectedImageIndex.value = 0
   showModal.value = true
+  // Bloquear scroll del body completamente
+  const scrollY = window.scrollY
+  document.body.style.position = 'fixed'
+  document.body.style.top = `-${scrollY}px`
+  document.body.style.width = '100%'
+  document.body.style.overflow = 'hidden'
 }
 
 const closeModal = () => {
   showModal.value = false
   selectedProduct.value = null
   modalSelectedColor.value = ''
+  selectedImageIndex.value = 0
+  // Restaurar scroll del body
+  const scrollY = document.body.style.top
+  document.body.style.position = ''
+  document.body.style.top = ''
+  document.body.style.width = ''
+  document.body.style.overflow = ''
+  window.scrollTo(0, parseInt(scrollY || '0') * -1)
 }
 
-// Colores de Apple predeterminados
+// Navegación entre imágenes
+const nextImage = () => {
+  if (selectedProduct.value && selectedImageIndex.value < selectedProduct.value.images.length - 1) {
+    selectedImageIndex.value++
+  }
+}
+
+const previousImage = () => {
+  if (selectedImageIndex.value > 0) {
+    selectedImageIndex.value--
+  }
+}
+
+// Colores de Apple predeterminados con paleta extendida
 const appleColors: Record<string, string> = {
-  'naranja cósmico': '#ff5e00',
-  'naranja cosmico': '#ff5e00',
-  'azul profundo': '#003d5c',
-  'plata': '#c0c0c0',
-  'silver': '#c0c0c0',
-  'azul': '#1976d2',
-  'blue': '#1976d2',
-  'negro': '#000000',
-  'black': '#000000',
-  'blanco': '#ffffff',
-  'white': '#ffffff',
-  'azul neblina': '#a8c7dd',
-  'dorado claro': '#f7e7a1',
-  'azul cielo': '#87ceeb',
-  'rosa': '#ff69b4',
-  'pink': '#ff69b4',
-  'amarillo': '#ffeb3b',
-  'yellow': '#ffeb3b',
-  'verde': '#4caf50',
-  'green': '#4caf50',
-  'púrpura': '#9c27b0',
-  'purpura': '#9c27b0',
-  'purple': '#9c27b0',
-  'morado': '#9c27b0',
-  'oro': '#ffd700',
-  'gold': '#ffd700'
+  // Colores primarios
+  'Rojo': '#FF0000',
+  'Azul': '#0000FF',
+  'Amarillo': '#FFFF00',
+  'Verde': '#00FF00',
+  'Naranja': '#FFA500',
+  'Morado': '#800080',
+  'Rosa': '#FFC0CB',
+  'Negro': '#000000',
+  'Blanco': '#FFFFFF',
+  'Gris': '#808080',
+  // Variantes de azul
+  'Azul Claro': '#ADD8E6',
+  'Azul Cielo': '#87CEEB',
+  'Azul Profundo': '#003d5c',
+  'Azul Marino': '#000080',
+  'Azul Medianoche': '#191970',
+  'Azul Neblina': '#a8c7dd',
+  // Variantes de verde
+  'Verde Claro': '#90EE90',
+  'Verde Alpino': '#0D7C66',
+  'Verde Bosque': '#228B22',
+  // Variantes de rojo/rosa
+  'Rojo Oscuro': '#8B0000',
+  'Rosa Claro': '#FFB6C1',
+  'Rosa Fuerte': '#FF69B4',
+  // Metálicos y neutros
+  'Plata': '#C0C0C0',
+  'Oro': '#FFD700',
+  'Dorado Claro': '#f7e7a1',
+  'Titanio': '#878681',
+  'Grafito': '#383838',
+  // Otros
+  'Púrpura': '#9C27B0',
+  'Naranja Cósmico': '#ff5e00',
+  'Crema': '#FFFDD0',
+  'Beige': '#F5F5DC'
 }
 
-// Normaliza nombres y obtiene color; fallback a gris claro
+// Normaliza nombres de colores eliminando tildes y convirtiendo a lowercase
 const getColorHex = (colorName: string): string => {
   if (!colorName) return '#cccccc'
-  const key = colorName.trim().toLowerCase()
-  return appleColors[key] || '#cccccc'
+
+  // Función para normalizar string (remover tildes y espacios extra)
+  const normalize = (str: string) => {
+    return str.toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+  }
+
+  const normalizedInput = normalize(colorName)
+
+  // Buscar en el objeto de colores normalizando cada clave
+  for (const [colorKey, hexValue] of Object.entries(appleColors)) {
+    if (normalize(colorKey) === normalizedInput) {
+      return hexValue
+    }
+  }
+
+  return '#cccccc' // Color por defecto si no se encuentra
 }
 
 // Función para obtener el texto del estado del producto
@@ -642,9 +863,9 @@ onUnmounted(() => stopAutoplay())
 
 .slide-image img {
   width: 100%;
-  max-width: 650px;
+  max-width: 1000px;
   height: auto;
-  max-height: 80vh;
+  max-height: 450px;
   object-fit: contain;
   filter: drop-shadow(0 30px 80px rgba(0, 0, 0, 0.6));
   transition: transform 0.5s ease;
@@ -784,6 +1005,168 @@ onUnmounted(() => stopAutoplay())
   }
 }
 
+.filters-bar {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 1.75rem 2rem;
+  margin-bottom: 3rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.filters-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 0 1 auto;
+  min-width: 180px;
+}
+
+.filter-item.price-range {
+  flex: 1 1 280px;
+}
+
+.filter-item label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0;
+}
+
+.filter-select,
+.price-input {
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.filter-select:focus,
+.price-input:focus {
+  border-color: #0071e3;
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+}
+
+.filter-select option {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.price-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.price-inputs span {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.price-input[type="number"]::-webkit-inner-spin-button,
+.price-input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.results-count {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  flex: 1;
+  position: fixed;
+  top: 1.4rem;
+}
+
+.clear-filters-btn {
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, rgba(0, 113, 227, 0.15), rgba(0, 113, 227, 0.08));
+  border: 1px solid rgba(0, 113, 227, 0.4);
+  color: #0071e3;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.clear-filters-btn:hover {
+  background: linear-gradient(135deg, #0071e3, #005bb5);
+  color: #fff;
+  border-color: #0071e3;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 113, 227, 0.4);
+}
+
+@media (max-width: 768px) {
+  .filters-bar {
+    padding: 1rem 0.75rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    width: 95%;
+    max-width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .filters-group {
+    flex-direction: column;
+    gap: 0.875rem;
+    margin-bottom: 0.875rem;
+    width: 100%;
+  }
+
+  .filter-item {
+    width: 100%;
+    min-width: unset;
+    max-width: 100%;
+  }
+
+  .filter-item.price-range {
+    flex: 1 1 100%;
+  }
+
+  .price-inputs {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .price-inputs span {
+    display: none;
+  }
+
+  .results-count {
+    position: static;
+    font-size: 0.8rem;
+  }
+
+  .clear-filters-btn {
+    padding: 0.625rem 1rem;
+    font-size: 0.8rem;
+    width: auto;
+  }
+}
+
 .products-container {
   display: flex;
   flex-direction: column;
@@ -798,11 +1181,14 @@ onUnmounted(() => stopAutoplay())
   padding: 80px 40px;
   border-bottom: 1px solid #2a2a2a;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
+  background: transparent;
 }
 
 .product-card-modern:hover {
-  background: #222222;
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom-color: rgba(0, 113, 227, 0.4);
+  transform: translateX(8px);
 }
 
 .product-card-modern:nth-child(even) .product-visual {
@@ -1003,14 +1389,15 @@ onUnmounted(() => stopAutoplay())
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.9);
+  background: rgb(0, 0, 0);
   backdrop-filter: blur(10px);
-  z-index: 10001;
+  z-index: 999999;
   display: flex;
   align-items: center;
   justify-content: center;
   animation: fadeIn 0.3s ease-out;
   padding: 20px;
+  overflow: hidden;
 }
 
 .modal-content {
@@ -1024,6 +1411,7 @@ onUnmounted(() => stopAutoplay())
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  margin: auto;
 }
 
 .modal-close.floating {
@@ -1057,59 +1445,92 @@ onUnmounted(() => stopAutoplay())
   padding: 40px;
 }
 
+.modal-image-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
 .modal-image {
   position: relative;
-}
-
-.image-gallery {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-}
-
-.image-gallery img {
   width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 12px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.image-navigation {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 16px;
+  pointer-events: none;
+}
+
+.nav-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  color: white;
   cursor: pointer;
   transition: all 0.3s;
-  border: 2px solid transparent;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.image-gallery img:hover {
-  transform: scale(1.05);
-}
-
-.image-gallery img.active {
-  border-color: #0071e3;
-  box-shadow: 0 0 20px rgba(0, 113, 227, 0.4);
-}
-
-.image-dots {
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin-top: 16px;
+  pointer-events: auto;
 }
 
-.image-dots button {
+.nav-btn:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.1);
+}
+
+.nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.image-indicators {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.indicator {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   border: none;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.4);
   cursor: pointer;
   transition: all 0.3s;
   padding: 0;
 }
 
-.image-dots button:hover {
-  background: rgba(255, 255, 255, 0.5);
+.indicator:hover {
+  background: rgba(255, 255, 255, 0.6);
 }
 
-.image-dots button.active {
+.indicator.active {
   background: #0071e3;
   width: 24px;
   border-radius: 4px;
@@ -1177,44 +1598,102 @@ onUnmounted(() => stopAutoplay())
 }
 
 .color-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 16px;
 }
 
 .color-option {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
+  padding: 12px;
+  border-radius: 12px;
   transition: all 0.3s;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid transparent;
 }
 
 .color-option:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.color-option.active {
+  border-color: #0071e3;
+  background: rgba(0, 113, 227, 0.1);
 }
 
 .color-option.active .color-circle {
-  transform: scale(1.1);
-  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.3);
+  transform: scale(1.15);
+  box-shadow: 0 4px 16px rgba(0, 113, 227, 0.5);
 }
 
 .color-circle {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   transition: all 0.3s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3), inset 0 1px 3px rgba(255, 255, 255, 0.2);
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.check-icon {
+  position: absolute;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
 }
 
 .color-name {
-  font-size: 12px;
-  color: #a1a1a6;
+  font-size: 13px;
+  color: #f5f5f7;
   text-align: center;
-  max-width: 80px;
+  font-weight: 500;
+  max-width: 100%;
+  word-break: break-word;
+}
+
+.color-image-indicator {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.image-color-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(0, 113, 227, 0.15), rgba(0, 199, 190, 0.15));
+  border-radius: 8px;
+  border: 1px solid rgba(0, 113, 227, 0.3);
+  margin-bottom: 12px;
+}
+
+.image-color-badge svg {
+  color: #0071e3;
+  flex-shrink: 0;
+}
+
+.image-color-badge span {
+  font-size: 15px;
+  font-weight: 600;
+  color: #f5f5f7;
+  letter-spacing: 0.3px;
+}
+
+.image-color-note {
+  margin: 0;
+  font-size: 13px;
+  color: #a1a1a6;
+  line-height: 1.5;
+  padding-left: 4px;
 }
 
 .modal-status {
@@ -1712,10 +2191,33 @@ onUnmounted(() => stopAutoplay())
 
 /* Responsive para modal de producto */
 @media (max-width: 768px) {
+  .modal-overlay {
+    padding: 0;
+  }
+
+  .modal-content {
+    width: 100%;
+    max-width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    overflow-y: auto;
+    margin: 0;
+  }
+
   .modal-body {
     grid-template-columns: 1fr;
-    padding: 20px;
-    gap: 24px;
+    padding: 16px;
+    gap: 16px;
+    overflow: visible;
+  }
+
+  .modal-image {
+    border-radius: 12px;
+  }
+
+  .modal-image img {
+    border-radius: 12px;
   }
 
   .modal-title {

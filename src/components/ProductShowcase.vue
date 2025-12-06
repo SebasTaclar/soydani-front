@@ -1,12 +1,15 @@
 <template>
   <section class="showcase-section">
     <div class="container">
-      <h2 class="showcase-title">Novedades</h2>
-      <p class="showcase-subtitle">Descubre nuestros productos más recientes</p>
 
       <!-- Sección: Tecnología -->
       <div v-if="technologyProducts.length > 0" class="category-section">
-        <h3 class="category-title">📱 Tecnología</h3>
+        <div class="category-header">
+          <h3 class="category-title">📱 Tecnología</h3>
+          <router-link to="/tecnologia" class="view-more-btn">
+            Ver más <span class="arrow">→</span>
+          </router-link>
+        </div>
         <div class="products-carousel">
           <div
             v-for="product in technologyProducts"
@@ -27,7 +30,12 @@
 
       <!-- Sección: Navidad -->
       <div v-if="christmasProducts.length > 0" class="category-section">
-        <h3 class="category-title">🎄 Navidad</h3>
+        <div class="category-header">
+          <h3 class="category-title">🎄 Navidad</h3>
+          <router-link to="/navidad" class="view-more-btn">
+            Ver más <span class="arrow">→</span>
+          </router-link>
+        </div>
         <div class="products-carousel">
           <div
             v-for="product in christmasProducts"
@@ -48,7 +56,12 @@
 
       <!-- Sección: Hogar -->
       <div v-if="homeProducts.length > 0" class="category-section">
-        <h3 class="category-title">🏠 Hogar</h3>
+        <div class="category-header">
+          <h3 class="category-title">🏠 Hogar</h3>
+          <router-link to="/hogar" class="view-more-btn">
+            Ver más <span class="arrow">→</span>
+          </router-link>
+        </div>
         <div class="products-carousel">
           <div
             v-for="product in homeProducts"
@@ -69,11 +82,11 @@
     </div>
 
     <!-- Modal de detalle del producto -->
-    <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
+    <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
         <div class="modal-header">
           <h3 class="modal-title">{{ selectedProduct?.name }}</h3>
-          <button class="modal-close" @click="showModal = false">✕</button>
+          <button class="modal-close" @click="closeModal">✕</button>
         </div>
         <div class="modal-body">
           <div class="modal-image">
@@ -161,6 +174,24 @@ const showProductDetail = (product: {
 }) => {
   selectedProduct.value = product
   showModal.value = true
+  // Bloquear scroll del body completamente
+  const scrollY = window.scrollY
+  document.body.style.position = 'fixed'
+  document.body.style.top = `-${scrollY}px`
+  document.body.style.width = '100%'
+  document.body.style.overflow = 'hidden'
+}
+
+const closeModal = () => {
+  showModal.value = false
+  selectedProduct.value = null
+  // Restaurar scroll del body
+  const scrollY = document.body.style.top
+  document.body.style.position = ''
+  document.body.style.top = ''
+  document.body.style.width = ''
+  document.body.style.overflow = ''
+  window.scrollTo(0, parseInt(scrollY || '0') * -1)
 }
 </script>
 
@@ -236,14 +267,66 @@ const showProductDetail = (product: {
   animation: slideIn 0.8s ease-out;
 }
 
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 0 1rem;
+}
+
 .category-title {
   font-size: 2rem;
   font-weight: 700;
   color: var(--primary-red);
-  margin-bottom: 2rem;
+  margin: 0;
   padding-left: 1rem;
   border-left: 4px solid var(--primary-red);
   text-shadow: 0 2px 10px rgba(220, 38, 38, 0.3);
+}
+
+.view-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #DC2626 0%, #b91c1c 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.view-more-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.view-more-btn:hover::before {
+  opacity: 1;
+}
+
+.view-more-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(220, 38, 38, 0.5);
+}
+
+.view-more-btn .arrow {
+  transition: transform 0.3s ease;
+  font-size: 1.2rem;
+}
+
+.view-more-btn:hover .arrow {
+  transform: translateX(5px);
 }
 
 /* Carrusel de productos */
@@ -321,13 +404,14 @@ const showProductDetail = (product: {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.9);
+  background: rgb(0, 0, 0);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  z-index: 999999;
   backdrop-filter: blur(10px);
   animation: fadeIn 0.3s ease;
+  overflow: hidden;
 }
 
 .modal-content {
@@ -455,10 +539,22 @@ const showProductDetail = (product: {
     margin-bottom: 3rem;
   }
 
+  .category-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 0 1.5rem;
+  }
+
   .category-title {
     font-size: 1.5rem;
-    padding-left: 1.5rem;
+    padding-left: 1rem;
     margin-left: 0;
+  }
+
+  .view-more-btn {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.85rem;
   }
 
   /* Carrusel horizontal deslizable en móvil */
