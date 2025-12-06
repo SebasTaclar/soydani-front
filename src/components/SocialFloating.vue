@@ -19,19 +19,7 @@
   <!-- Redes sociales flotantes a la derecha -->
   <div class="floating-social">
     <a
-      href="https://www.facebook.com/danirodriguez.col"
-      target="_blank"
-      rel="noopener"
-      class="social-btn facebook"
-    >
-      <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-      </svg>
-      <span class="social-tooltip">Facebook</span>
-    </a>
-
-    <a
-      href="https://www.instagram.com/soydanirodriguezz/"
+      href="https://www.instagram.com/soydani.shop?igsh=dmx5OTZ2ejJuaTI3"
       target="_blank"
       rel="noopener"
       class="social-btn instagram"
@@ -43,7 +31,7 @@
     </a>
 
     <a
-      href="https://www.tiktok.com/@soydanirodriguezz"
+      href="https://www.tiktok.com/@soydani.shop?_r=1&_t=ZS-91tNPHjqlEW"
       target="_blank"
       rel="noopener"
       class="social-btn tiktok"
@@ -58,7 +46,7 @@
 
 <script setup lang="ts">
 // Número en formato internacional (sin '+')
-const rawNumber = '573209860099'
+const rawNumber = '573115924675'
 // Normaliza a solo dígitos
 const whatsappNumber = rawNumber.replace(/[^\d]/g, '')
 

@@ -182,23 +182,45 @@
           </svg>
         </button>
         <div class="modal-body">
-          <div class="modal-image">
-            <div class="image-gallery">
+          <!-- Carrusel de imágenes -->
+          <div class="modal-image-container">
+            <div class="modal-image">
               <img
-                v-for="(image, index) in selectedProduct?.images"
-                :key="index"
-                :src="image"
-                :alt="`${selectedProduct?.name} - ${index + 1}`"
-                :class="{ active: selectedImageIndex === index }"
-                @click="selectedImageIndex = index"
+                :src="selectedProduct?.images[selectedImageIndex]"
+                :alt="selectedProduct?.name"
                 loading="lazy"
                 decoding="async"
               />
             </div>
-            <div v-if="selectedProduct?.images && selectedProduct.images.length > 1" class="image-dots">
+
+            <!-- Controles de navegación (solo si hay más de 1 imagen) -->
+            <div v-if="selectedProduct && selectedProduct.images.length > 1" class="image-navigation">
               <button
-                v-for="(image, index) in selectedProduct.images"
+                class="nav-btn prev"
+                @click="previousImage"
+                :disabled="selectedImageIndex === 0"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="m15 18-6-6 6-6"/>
+                </svg>
+              </button>
+              <button
+                class="nav-btn next"
+                @click="nextImage"
+                :disabled="selectedImageIndex === selectedProduct.images.length - 1"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="m9 18 6-6-6-6"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Indicadores de imagen (solo si hay más de 1 imagen) -->
+            <div v-if="selectedProduct && selectedProduct.images.length > 1" class="image-indicators">
+              <button
+                v-for="(img, index) in selectedProduct.images"
                 :key="index"
+                class="indicator"
                 :class="{ active: selectedImageIndex === index }"
                 @click="selectedImageIndex = index"
               ></button>
@@ -231,11 +253,28 @@
                 >
                   <div
                     class="color-circle"
-                    :style="{ backgroundColor: getColorHex(colorName), border: '2px solid ' + (modalSelectedColor === colorName ? '#26F7D7' : getColorHex(colorName)) }"
-                  ></div>
+                    :style="{ backgroundColor: getColorHex(colorName) }"
+                  >
+                    <svg v-if="modalSelectedColor === colorName" class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                      <path d="M20 6 9 17l-5-5"/>
+                    </svg>
+                  </div>
                   <span class="color-name">{{ colorName }}</span>
                 </div>
               </div>
+            </div>
+
+            <!-- Indicador de color de imagen -->
+            <div v-else class="color-image-indicator">
+              <div class="image-color-badge">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <path d="m21 15-5-5L5 21"/>
+                </svg>
+                <span>Color de la imagen</span>
+              </div>
+              <p class="image-color-note">Este producto se muestra con el color de la imagen</p>
             </div>
 
             <div class="modal-status">
@@ -264,11 +303,6 @@
   background: linear-gradient(135deg, #dad1d1 0%, #f3f0f0 100%);
   position: relative;
 }
-.product-store {
-  padding: 3rem 0;
-  background: linear-gradient(135deg, #dad1d1 0%, #f3f0f0 100%);
-  position: relative;
-}
 
 /* Estilos del modal oscuro */
 .modal-overlay {
@@ -277,7 +311,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgb(0, 0, 0);
+  background: rgba(0, 0, 0, 0.95);
   z-index: 2000;
   display: flex;
   align-items: center;
@@ -286,186 +320,366 @@
 }
 
 .modal-content {
-  background: #000000;
-  width: 95%;
-  max-width: 1100px;
-  max-height: 85vh;
+  background: #1d1d1f;
+  border-radius: 20px;
+  max-width: 1200px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
   position: relative;
-  overflow: hidden;
-  padding: 2rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .modal-close {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  z-index: 100;
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f5f5f7;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: white;
-  transition: all 0.3s ease;
+  transition: all 0.3s;
+  z-index: 10;
+  backdrop-filter: blur(10px);
 }
 
 .modal-close:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.8);
+  transform: rotate(90deg);
 }
 
 .modal-body {
-  display: flex;
-  padding: 0;
-  height: 100%;
-  color: white;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  padding: 40px;
+  overflow: visible;
+  height: auto;
 }
 
 .modal-main-content {
   display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: visible;
+}
+
+.modal-image-container {
+  position: relative;
   width: 100%;
 }
 
 .modal-image {
-  flex: 1.2;
-  background: linear-gradient(145deg, #1e1e1e 0%, #252525 100%);
-  border-right: 1px solid #2f2f2f;
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  height: auto;
 }
 
 .modal-image img {
-  max-width: 100%;
-  max-height: 400px;
-  object-fit: contain;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 16px;
 }
 
-.modal-details {
-  flex: 1;
-  padding: 2.5rem;
+/* Controles de navegación de imágenes */
+.image-navigation {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+  pointer-events: none;
+}
+
+.nav-btn {
+  pointer-events: all;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  backdrop-filter: blur(10px);
+}
+
+.nav-btn:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.9);
+  transform: scale(1.1);
+}
+
+.nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Indicadores de imagen */
+.image-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+  padding: 0;
+}
+
+.indicator:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.indicator.active {
+  width: 24px;
+  border-radius: 4px;
+  background: #0071e3;
+}
+
+.modal-info {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 20px;
+  overflow: visible;
+  height: auto;
 }
 
 .modal-title {
-  font-size: 2rem;
-  font-weight: 600;
-  color: white;
+  font-size: 38px;
+  font-weight: 800;
   margin: 0;
+  color: #f5f5f7;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
 }
 
 .modal-category {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #0071e3;
+  font-size: 14px;
   text-transform: uppercase;
-  margin: 0.5rem 0 1rem;
+  letter-spacing: 1px;
+  font-weight: 600;
 }
 
 .modal-description {
-  font-size: 0.9375rem;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.8);
+  color: #a1a1a6;
+  font-size: 17px;
+  line-height: 1.7;
   margin: 0;
+  max-width: 90%;
 }
 
 .modal-price {
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: #0A84FF;
-  margin: 1.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.modal-current-price {
+  font-size: 32px;
+  font-weight: 700;
+  color: #0071e3;
+}
+
+.modal-original-price {
+  font-size: 20px;
+  color: #86868b;
+  text-decoration: line-through;
+}
+
+.modal-colors {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 20px 0;
 }
 
 .modal-colors h4 {
-  color: white;
-  margin: 0 0 1rem;
-  font-size: 0.875rem;
-  font-weight: normal;
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #f5f5f7;
 }
 
 .color-options {
   display: flex;
-  gap: 0.75rem;
   flex-wrap: wrap;
+  gap: 12px;
 }
 
 .color-option {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.3s;
 }
 
 .color-option:hover {
-  transform: scale(1.05);
-}
-
-.color-circle {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 2px solid white;
-  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .color-option.active .color-circle {
-  border: 2px solid #26F7D7;
+  transform: scale(1.1);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.3);
+}
+
+.color-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .color-name {
-  font-size: 0.75rem;
-  color: #fff;
-  text-transform: uppercase;
+  font-size: 12px;
+  color: #a1a1a6;
+  text-align: center;
+  max-width: 80px;
 }
 
-.color-name {
-  font-size: 0.85rem;
-  color: #999;
+.color-image-indicator {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.image-color-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(0, 113, 227, 0.15), rgba(0, 199, 190, 0.15));
+  border-radius: 8px;
+  border: 1px solid rgba(0, 113, 227, 0.3);
+  margin-bottom: 12px;
+}
+
+.image-color-badge svg {
+  color: #0071e3;
+  flex-shrink: 0;
+}
+
+.image-color-badge span {
+  font-size: 15px;
+  font-weight: 600;
+  color: #f5f5f7;
+  letter-spacing: 0.3px;
+}
+
+.image-color-note {
+  margin: 0;
+  font-size: 13px;
+  color: #a1a1a6;
+  line-height: 1.5;
+  padding-left: 4px;
+}
+
+.modal-status {
+  display: flex;
+  gap: 8px;
 }
 
 .status-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
   text-transform: uppercase;
-  font-weight: 500;
-  background: transparent;
+  letter-spacing: 0.5px;
 }
 
 .status-available {
-  color: #30D158;
-  background: rgba(48, 209, 88, 0.1);
+  background: rgba(52, 199, 89, 0.15);
+  color: #34c759;
+  border: 1px solid rgba(52, 199, 89, 0.3);
+}
+
+.status-coming-soon {
+  background: rgba(255, 204, 0, 0.15);
+  color: #ffcc00;
+  border: 1px solid rgba(255, 204, 0, 0.3);
+}
+
+.status-out-of-stock {
+  background: rgba(255, 59, 48, 0.15);
+  color: #ff3b30;
+  border: 1px solid rgba(255, 59, 48, 0.3);
+}
+
+.status-unavailable {
+  background: rgba(142, 142, 147, 0.15);
+  color: #8e8e93;
+  border: 1px solid rgba(142, 142, 147, 0.3);
 }
 
 .modal-add-to-cart {
-  margin-top: 2rem;
-  width: 100%;
-  padding: 0.875rem;
-  background: #2C2C2E;
+  background: linear-gradient(135deg, #0071e3 0%, #0051a8 100%);
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 0.9375rem;
-  font-weight: 500;
+  padding: 16px 32px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(0, 113, 227, 0.3);
+  margin-top: auto;
 }
 
 .modal-add-to-cart:hover:not(:disabled) {
-  background: #3A3A3C;
+  box-shadow: 0 6px 20px rgba(0, 113, 227, 0.4);
+  transform: translateY(-2px);
 }
 
 .modal-add-to-cart:disabled {
-  background: #2C2C2E;
-  opacity: 0.5;
+  background: rgba(142, 142, 147, 0.2);
+  color: #8e8e93;
   cursor: not-allowed;
+  box-shadow: none;
+}
+
+.modal-add-to-cart:hover:not(:disabled) {
+  box-shadow: 0 6px 20px rgba(0, 113, 227, 0.4);
+  transform: translateY(-2px);
+}
+
+.modal-add-to-cart:disabled {
+  background: rgba(142, 142, 147, 0.2);
+  color: #8e8e93;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 /* Estilos para móvil */
@@ -474,136 +688,75 @@
     padding: 0;
   }
 
-  /* El contenedor del modal debe controlar el scroll en móvil */
   .modal-content {
     width: 100%;
+    max-width: 100%;
     height: 100vh;
+    max-height: 100vh;
     border-radius: 0;
-    padding: 0;
-    background: #000;
-    overflow-y: auto; /* scroll para TODO el modal */
-    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
   }
 
-  /* Mostrar como grid (igual que AppleWatchPage) y dejar que el contenido fluya desde la parte superior
-     La imagen formará parte del flujo y se desplazará junto al resto del contenido */
   .modal-body {
-    display: grid;
     grid-template-columns: 1fr;
-    padding: 20px;
-    gap: 24px;
-    align-items: start;
+    gap: 16px;
+    padding: 16px;
+    overflow: visible;
   }
 
-  .modal-close.floating {
+  .modal-close {
     position: fixed;
     top: 1rem;
     right: 1rem;
     z-index: 1000;
-    background: rgba(0,0,0,0.6);
-    border: 1px solid rgba(255,255,255,0.1);
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    backdrop-filter: blur(6px);
-  }
-
-  .modal-close.floating svg {
-    width: 20px;
-    height: 20px;
   }
 
   .modal-image {
-    width: calc(100% - 2rem);
-    background: #fff;
-    border-radius: 8px;
-    aspect-ratio: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 1rem auto; /* centrar horizontalmente en móvil */
-    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    border-radius: 12px;
   }
 
   .modal-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
+    border-radius: 12px;
   }
 
-  /* Asegurar que el contenido interno también esté centrado */
-  .modal-image .image-gallery,
-  .modal-image img {
-    margin: auto;
-  }
-
-  .modal-info {
-    padding: 0 1rem;
+  .image-gallery {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
   }
 
   .modal-title {
-    font-size: 2rem;
-    line-height: 1.2;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
+    font-size: 24px;
   }
 
-  .modal-category {
-    color: #999;
-    font-size: 0.875rem;
-    margin: 0.25rem 0 1rem;
+  .modal-current-price {
+    font-size: 24px;
   }
 
-  .modal-description {
-    font-size: 0.9375rem;
-    line-height: 1.5;
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 1.5rem;
-  }
-
-  .modal-price {
-    font-size: 2rem;
-    color: #0A84FF;
-    margin: 1.5rem 0;
-  }
-
-  .color-options {
-    gap: 2rem;
-    justify-content: flex-start;
-    margin: 0.5rem 0 2rem;
-  }
-
-  .color-option {
-    align-items: center;
-  }
-
-  .color-circle {
-    width: 24px;
-    height: 24px;
-    border: 2px solid white;
-  }
-
-  .color-name {
-    font-size: 0.75rem;
-    margin-top: 0.5rem;
-    text-transform: uppercase;
-  }
-
-  .modal-status {
-    margin: 1rem 0;
+  .modal-original-price {
+    font-size: 16px;
   }
 
   .modal-add-to-cart {
-    margin: 1rem 0 2rem;
-    width: 100%;
-    background: #2C2C2E;
-    border-radius: 8px;
-    height: 48px;
-    font-size: 0.9375rem;
+    padding: 14px 24px;
+    font-size: 16px;
+  }
+
+  .modal-category {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.65rem;
+  }
+
+  .modal-description {
+    font-size: 0.85rem;
+  }
+
+  .modal-current-price {
+    font-size: 1.5rem;
+  }
+
+  .modal-add-to-cart {
+    padding: 0.875rem;
+    font-size: 0.875rem;
   }
 }
 </style><script setup lang="ts">
@@ -691,9 +844,34 @@ const mappedSelectedProduct = computed(() => {
 // Función para abrir modal del producto
 const openProductModal = (product: ProductType) => {
   selectedProduct.value = product
-  modalSelectedColor.value = ''
+  // Si el producto no tiene colores seleccionables, indicar que es color de imagen
+  if (!product.colors || product.colors.length === 0) {
+    modalSelectedColor.value = 'COLOR_DE_IMAGEN'
+  } else {
+    modalSelectedColor.value = ''
+  }
   selectedImageIndex.value = 0
   showModal.value = true
+  // Bloquear scroll del body completamente
+  const scrollY = window.scrollY
+  document.body.style.position = 'fixed'
+  document.body.style.top = `-${scrollY}px`
+  document.body.style.width = '100%'
+  document.body.style.overflow = 'hidden'
+  document.body.classList.add('modal-open')
+}
+
+// Funciones para navegación de imágenes
+const nextImage = () => {
+  if (selectedProduct.value && selectedImageIndex.value < selectedProduct.value.images.length - 1) {
+    selectedImageIndex.value++
+  }
+}
+
+const previousImage = () => {
+  if (selectedImageIndex.value > 0) {
+    selectedImageIndex.value--
+  }
 }
 
 // Función para cerrar modal
@@ -701,6 +879,15 @@ const closeModal = () => {
   showModal.value = false
   selectedProduct.value = null
   modalSelectedColor.value = ''
+  selectedImageIndex.value = 0
+  // Restaurar scroll del body
+  const scrollY = document.body.style.top
+  document.body.style.position = ''
+  document.body.style.top = ''
+  document.body.style.width = ''
+  document.body.style.overflow = ''
+  window.scrollTo(0, parseInt(scrollY || '0') * -1)
+  document.body.classList.remove('modal-open')
 }
 
 // Función para ir al checkout
@@ -797,42 +984,80 @@ const filteredProducts = computed(() => {
   return mapAndEnhance(baseList)
 })
 
-// Colores de Apple predeterminados (incluye variantes en inglés y español)
+// Colores predeterminados (incluye variantes en inglés y español)
 const appleColors: Record<string, string> = {
-  // Nueva paleta actualizada
-  'naranja cósmico': '#ff5e00',
-  'naranja cosmico': '#ff5e00',
-  'azul profundo': '#003d5c',
-  'plata': '#c0c0c0',
-  'silver': '#c0c0c0',
-  'azul': '#1976d2',
-  'blue': '#1976d2',
+  // Colores primarios
+  'rojo': '#FF0000',
+  'red': '#FF0000',
+  'azul': '#0000FF',
+  'blue': '#0000FF',
+  'amarillo': '#FFFF00',
+  'yellow': '#FFFF00',
+  'verde': '#00FF00',
+  'green': '#00FF00',
+  'naranja': '#FFA500',
+  'orange': '#FFA500',
+  'morado': '#800080',
+  'púrpura': '#800080',
+  'purpura': '#800080',
+  'purple': '#800080',
+  'rosa': '#FFC0CB',
+  'pink': '#FFC0CB',
   'negro': '#000000',
   'black': '#000000',
-  'blanco': '#ffffff',
-  'white': '#ffffff',
+  'blanco': '#FFFFFF',
+  'white': '#FFFFFF',
+  'gris': '#808080',
+  'gray': '#808080',
+  'grey': '#808080',
+  // Variantes de azul
+  'azul claro': '#ADD8E6',
+  'light blue': '#ADD8E6',
+  'azul cielo': '#87CEEB',
+  'sky blue': '#87CEEB',
+  'azul profundo': '#003d5c',
+  'deep blue': '#003d5c',
   'azul neblina': '#a8c7dd',
+  // Variantes de naranja
+  'naranja cósmico': '#ff5e00',
+  'naranja cosmico': '#ff5e00',
+  // Otros colores
+  'plata': '#c0c0c0',
+  'silver': '#c0c0c0',
+  'dorado': '#ffd700',
   'dorado claro': '#f7e7a1',
-  'azul cielo': '#87ceeb',
-  'rosa': '#ff69b4',
-  'pink': '#ff69b4',
-  'amarillo': '#ffeb3b',
-  'yellow': '#ffeb3b',
-  'verde': '#4caf50',
-  'green': '#4caf50',
-  'púrpura': '#9c27b0',
-  'purpura': '#9c27b0',
-  'purple': '#9c27b0',
-  'morado': '#9c27b0',
   'oro': '#ffd700',
-  'gold': '#ffd700'
+  'gold': '#ffd700',
+  'verde claro': '#90EE90',
+  'light green': '#90EE90',
+  'rojo oscuro': '#8B0000',
+  'dark red': '#8B0000'
 }
 
 // Normaliza nombres y obtiene color; fallback a gris claro
 const getColorHex = (colorName: string): string => {
   if (!colorName) return '#cccccc'
-  const key = colorName.trim().toLowerCase()
-  return appleColors[key] || '#cccccc'
+
+  // Normalizar: quitar tildes, espacios extra, convertir a minúsculas
+  const normalize = (str: string) => {
+    return str
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Quitar tildes
+      .trim()
+  }
+
+  const key = normalize(colorName)
+
+  // Buscar en el mapa de colores
+  for (const [colorKey, hexValue] of Object.entries(appleColors)) {
+    if (normalize(colorKey) === key) {
+      return hexValue
+    }
+  }
+
+  // Fallback a gris
+  return '#cccccc'
 }
 </script>
 
@@ -1425,7 +1650,7 @@ const getColorHex = (colorName: string): string => {
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  background: transparent;
   border-radius: 16px;
   padding: 0.875rem;
   border: 2px solid rgba(16, 185, 129, 0.1);
@@ -1889,12 +2114,14 @@ const getColorHex = (colorName: string): string => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgb(0, 0, 0);
+  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: 999999;
   padding: 2rem;
+  overflow: hidden;
 }
 
 .product-modal {
@@ -1907,6 +2134,8 @@ const getColorHex = (colorName: string): string => {
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
+  margin: auto;
+  position: relative;
 }
 
 .modal-header {
@@ -2021,8 +2250,6 @@ const getColorHex = (colorName: string): string => {
 
 .modal-info {
   flex: 1;
-  padding: 2rem;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -2194,11 +2421,16 @@ const getColorHex = (colorName: string): string => {
 @media (max-width: 768px) {
   .product-modal-overlay {
     padding: 1rem;
+    align-items: flex-start;
+    padding-top: 20px;
   }
 
   .product-modal {
     max-width: 100%;
     flex-direction: column;
+    max-height: none;
+    margin-top: 20px;
+    margin-bottom: 20px;
   }
 
   .modal-content {
@@ -2210,7 +2442,7 @@ const getColorHex = (colorName: string): string => {
   }
 
   .modal-info {
-    padding: 1.5rem;
+
   }
 
   .modal-product-name {
@@ -2233,12 +2465,13 @@ const getColorHex = (colorName: string): string => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgb(0, 0, 0);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
-  backdrop-filter: blur(4px);
+  z-index: 999999;
+  backdrop-filter: blur(10px);
+  overflow: hidden;
 }
 
 .modal-content {
@@ -2312,13 +2545,10 @@ const getColorHex = (colorName: string): string => {
 
 .modal-category {
   display: inline-block;
-  background: var(--brand-primary);
   color: white;
-  padding: 0.3rem 0.8rem;
   border-radius: 12px;
   font-size: 0.8rem;
   font-weight: 600;
-  margin-bottom: 1rem;
 }
 
 .modal-description {
@@ -2332,7 +2562,7 @@ const getColorHex = (colorName: string): string => {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .modal-current-price {
@@ -2347,9 +2577,6 @@ const getColorHex = (colorName: string): string => {
   color: #999;
 }
 
-.modal-colors {
-  margin-bottom: 1.5rem;
-}
 
 .modal-colors h4 {
   margin: 0 0 1rem 0;
@@ -2380,7 +2607,6 @@ const getColorHex = (colorName: string): string => {
 
 .color-option.active {
   border-color: var(--brand-primary);
-  background: #f0f9ff;
 }
 
 .color-circle {
@@ -2398,9 +2624,7 @@ const getColorHex = (colorName: string): string => {
     text-align: center;
   }
 
-  .modal-status {
-    margin-bottom: 1.5rem;
-  }
+
 
   .image-navigation {
     position: absolute;
@@ -2558,20 +2782,22 @@ const getColorHex = (colorName: string): string => {
 }
 
 /* === MODAL DEL PRODUCTO (copiado de AppleWatchPage) === */
+
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.9);
+  background: rgb(0, 0, 0);
   backdrop-filter: blur(10px);
-  z-index: 10001;
+  z-index: 999999;
   display: flex;
   align-items: center;
   justify-content: center;
   animation: fadeIn 0.3s ease-out;
   padding: 20px;
+  overflow: hidden;
 }
 
 .modal-content {
@@ -2585,6 +2811,7 @@ const getColorHex = (colorName: string): string => {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  margin: auto;
 }
 
 .modal-close.floating {
@@ -2845,21 +3072,24 @@ const getColorHex = (colorName: string): string => {
 /* Responsive para modal de producto */
 @media (max-width: 768px) {
   .modal-overlay {
-    padding: 0;
+    padding: 10px;
+    align-items: flex-start;
+    padding-top: 20px;
   }
 
   .modal-content {
     width: 100%;
-    height: 100vh;
     max-height: none;
-    border-radius: 0;
+    border-radius: 20px;
     padding: 0;
     overflow-y: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
   }
 
   .modal-body {
     grid-template-columns: 1fr;
-    padding: 20px;
+    padding: 7px;
     gap: 24px;
     min-height: 100%;
   }
@@ -2977,5 +3207,59 @@ const getColorHex = (colorName: string): string => {
     padding: 0.3rem;
     min-width: 24px;
   }
+}
+
+/* Estilos globales mejorados para colores en modales */
+.color-options {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)) !important;
+  gap: 16px !important;
+}
+
+.color-option {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 2px solid transparent !important;
+  padding: 12px !important;
+  gap: 10px !important;
+  border-radius: 12px !important;
+}
+
+.color-option:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  transform: translateY(-2px) !important;
+}
+
+.color-option.active {
+  border-color: #0071e3 !important;
+  background: rgba(0, 113, 227, 0.1) !important;
+}
+
+.color-option.active .color-circle {
+  transform: scale(1.15) !important;
+  box-shadow: 0 4px 16px rgba(0, 113, 227, 0.5) !important;
+}
+
+.color-circle {
+  width: 48px !important;
+  height: 48px !important;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3), inset 0 1px 3px rgba(255, 255, 255, 0.2) !important;
+  border: 3px solid rgba(255, 255, 255, 0.2) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+}
+
+.check-icon {
+  position: absolute !important;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5)) !important;
+}
+
+.color-name {
+  font-size: 13px !important;
+  color: #f5f5f7 !important;
+  font-weight: 500 !important;
+  max-width: 100% !important;
+  word-break: break-word !important;
 }
 </style>

@@ -468,8 +468,64 @@
 
             <!-- Selector de Colores -->
             <div class="form-group">
-              <label>Colores Disponibles</label>
-              <div class="colors-selector">
+              <label>Configuración de Colores</label>
+
+              <!-- Toggle para modo de color -->
+              <div class="color-mode-selector">
+                <button
+                  type="button"
+                  class="mode-btn"
+                  :class="{ active: productForm.colorMode === 'image' }"
+                  @click="productForm.colorMode = 'image'"
+                >
+                  <span class="mode-icon">🖼️</span>
+                  <div class="mode-text">
+                    <strong>Color de la imagen</strong>
+                    <span>El producto viene en el color mostrado</span>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  class="mode-btn"
+                  :class="{ active: productForm.colorMode === 'selection' }"
+                  @click="productForm.colorMode = 'selection'"
+                >
+                  <span class="mode-icon">🎨</span>
+                  <div class="mode-text">
+                    <strong>Múltiples colores</strong>
+                    <span>El cliente puede elegir entre varios colores</span>
+                  </div>
+                </button>
+              </div>
+
+              <!-- Selector de colores (solo visible si el modo es 'selection') -->
+              <div v-if="productForm.colorMode === 'selection'" class="colors-selector">
+                <!-- Agregar color personalizado -->
+                <div class="add-custom-color">
+                  <div class="custom-color-inputs">
+                    <input
+                      v-model="customColorName"
+                      type="text"
+                      class="form-input custom-color-input"
+                      placeholder="Nombre del color (ej: Azul Marino)"
+                    />
+                    <input
+                      v-model="customColorHex"
+                      type="color"
+                      class="color-picker"
+                      title="Seleccionar color"
+                    />
+                    <button
+                      type="button"
+                      class="btn-add-color"
+                      @click="addCustomColor"
+                      :disabled="!customColorName.trim()"
+                    >
+                      ➕ Agregar
+                    </button>
+                  </div>
+                </div>
+
                 <div class="colors-grid">
                   <div
                     v-for="color in appleColors"
@@ -482,106 +538,95 @@
                       <span v-if="isColorSelected(color.name)" class="check-icon">✓</span>
                     </div>
                     <span class="color-name">{{ color.name }}</span>
+                    <!-- Botón para eliminar colores personalizados -->
+                    <button
+                      v-if="color.isCustom"
+                      type="button"
+                      class="remove-custom-color"
+                      @click.stop="removeCustomColor(color.name)"
+                      title="Eliminar color personalizado"
+                    >
+                      ✕
+                    </button>
                   </div>
                 </div>
                 <div v-if="productForm.colors.length > 0" class="selected-colors">
-                  <span class="selected-label">Seleccionados: </span>
+                  <span class="selected-label">Seleccionados ({{ productForm.colors.length }}): </span>
                   <span class="selected-list">{{ productForm.colors.join(', ') }}</span>
                 </div>
+                <div v-else class="color-hint">
+                  ℹ️ Selecciona al menos un color para que el cliente pueda elegir
+                </div>
+              </div>
+
+              <!-- Mensaje para modo imagen -->
+              <div v-if="productForm.colorMode === 'image'" class="color-image-note">
+                <span class="note-icon">ℹ️</span>
+                <p>El producto se mostrará con el color de la imagen y no habrá opciones de selección de color para el cliente.</p>
               </div>
             </div>
 
             <!-- Subida de imagen -->
             <div class="form-group">
-              <label>Imagen del Producto *</label>
+              <label>URLs de Imágenes del Producto *</label>
+              <p class="field-hint">Agrega hasta 5 URLs de imágenes. La primera imagen será la principal.</p>
 
-              <!-- Tabs para elegir método de imagen -->
-              <div class="image-tabs">
-                <button
-                  type="button"
-                  class="tab-btn"
-                  :class="{ active: productImageUploadMethod === 'url' }"
-                  @click="productImageUploadMethod = 'url'"
+              <!-- Lista de URLs de imágenes -->
+              <div class="image-urls-container">
+                <div
+                  v-for="(imageUrl, index) in productForm.images"
+                  :key="index"
+                  class="image-url-item"
                 >
-                  URL de Imagen
-                </button>
-                <button
-                  type="button"
-                  class="tab-btn"
-                  :class="{ active: productImageUploadMethod === 'file' }"
-                  @click="productImageUploadMethod = 'file'"
-                >
-                  Subir Archivo
-                </button>
-              </div>
-
-              <!-- Campo URL -->
-              <div v-if="productImageUploadMethod === 'url'" class="image-input-section">
-                <input
-                  :value="productForm.images[0] || ''"
-                  @input="(e) => { productForm.images = [(e.target as HTMLInputElement).value]; updateImagePreview(); }"
-                  type="url"
-                  class="form-input"
-                  required
-                  placeholder="https://ejemplo.com/imagen.jpg"
-                />
-              </div>
-
-              <!-- Campo de archivo -->
-              <div v-if="productImageUploadMethod === 'file'" class="image-input-section">
-                <input
-                  ref="fileInput"
-                  type="file"
-                  class="file-input"
-                  accept="image/*"
-                  multiple
-                  @change="handleMultipleFileSelect"
-                />
-                <div class="file-upload-area" @click="fileInput?.click()">
-                  <div v-if="productForm.images.length === 0" class="upload-placeholder">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                      <circle cx="9" cy="9" r="2"/>
-                      <path d="M21 15l-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
-                    </svg>
-                    <p>Haz clic para seleccionar imágenes</p>
-                    <span>JPG, PNG, GIF hasta 5MB (máximo 5 imágenes)</span>
-                  </div>
-                  <div v-if="productForm.images.length > 0" class="images-preview-grid">
-                    <div
-                      v-for="(image, index) in productForm.images"
-                      :key="index"
-                      class="image-preview-item"
+                  <div class="url-input-wrapper">
+                    <span class="url-index">{{ index + 1 }}</span>
+                    <input
+                      v-model="productForm.images[index]"
+                      type="url"
+                      class="form-input url-input"
+                      :required="index === 0"
+                      placeholder="https://ejemplo.com/imagen.jpg"
+                    />
+                    <button
+                      v-if="productForm.images.length > 1"
+                      type="button"
+                      class="btn-remove-url"
+                      @click="removeSingleImage(index)"
+                      title="Eliminar esta URL"
                     >
-                      <img :src="image" :alt="`Preview ${index + 1}`" />
+                      ✕
+                    </button>
+                  </div>
+                  <div v-if="imageUrl" class="url-preview">
+                    <img :src="imageUrl" :alt="`Imagen ${index + 1}`" @error="handleImageError(index)" />
+                    <div class="url-actions">
                       <button
                         type="button"
-                        class="remove-single-image"
-                        @click.stop="removeSingleImage(index)"
-                      >
-                        ✕
-                      </button>
-                      <span class="image-index">{{ index + 1 }}</span>
-                      <div class="image-actions">
-                        <button
-                          type="button"
-                          class="img-action-btn"
-                          :disabled="index === 0"
-                          @click.stop="moveImageLeft(index)"
-                          title="Mover a la izquierda"
-                        >←</button>
-                        <button
-                          type="button"
-                          class="img-action-btn"
-                          :disabled="index === productForm.images.length - 1"
-                          @click.stop="moveImageRight(index)"
-                          title="Mover a la derecha"
-                        >→</button>
-                        <!-- Botón Portada removido temporalmente -->
-                      </div>
+                        class="btn-reorder"
+                        :disabled="index === 0"
+                        @click="moveImageLeft(index)"
+                        title="Mover a la izquierda"
+                      >←</button>
+                      <button
+                        type="button"
+                        class="btn-reorder"
+                        :disabled="index === productForm.images.length - 1"
+                        @click="moveImageRight(index)"
+                        title="Mover a la derecha"
+                      >→</button>
                     </div>
                   </div>
                 </div>
+
+                <!-- Botón para agregar más URLs -->
+                <button
+                  v-if="productForm.images.length < 5"
+                  type="button"
+                  class="btn-add-url"
+                  @click="addImageUrl"
+                >
+                  ➕ Agregar otra URL de imagen
+                </button>
               </div>
             </div>
 
@@ -652,63 +697,65 @@
               <input v-model.number="showcaseForm.price" type="number" class="form-input" min="0" step="1000" />
             </div>
             <div class="form-group">
-              <label>Imagen del Producto *</label>
+              <label>URLs de Imágenes del Producto *</label>
+              <p class="field-hint">Agrega hasta 5 URLs de imágenes. La primera imagen será la principal.</p>
 
-              <!-- Tabs para elegir método de imagen -->
-              <div class="image-tabs">
-                <button
-                  type="button"
-                  class="tab-btn"
-                  :class="{ active: imageUploadMethod === 'url' }"
-                  @click="imageUploadMethod = 'url'"
+              <!-- Lista de URLs de imágenes -->
+              <div class="image-urls-container">
+                <div
+                  v-for="(imageUrl, index) in showcaseForm.images"
+                  :key="index"
+                  class="image-url-item"
                 >
-                  URL de Imagen
-                </button>
-                <button
-                  type="button"
-                  class="tab-btn"
-                  :class="{ active: imageUploadMethod === 'file' }"
-                  @click="imageUploadMethod = 'file'"
-                >
-                  Subir Archivo
-                </button>
-              </div>
-
-              <!-- Campo URL -->
-              <div v-if="imageUploadMethod === 'url'" class="image-input-section">
-                <input
-                  v-model="showcaseForm.image"
-                  type="url"
-                  class="form-input"
-                  required
-                  placeholder="https://ejemplo.com/imagen.jpg"
-                />
-              </div>
-
-              <!-- Campo de archivo -->
-              <div v-if="imageUploadMethod === 'file'" class="image-input-section">
-                <input
-                  ref="showcaseFileInput"
-                  type="file"
-                  class="file-input"
-                  accept="image/*"
-                  @change="handleShowcaseFileSelect"
-                />
-                <div class="file-upload-area" @click="showcaseFileInput?.click()">
-                  <div v-if="!showcaseImagePreview" class="upload-placeholder">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                      <circle cx="9" cy="9" r="2"/>
-                      <path d="M21 15l-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
-                    </svg>
-                    <p>Haz clic para seleccionar una imagen</p>
-                    <span>JPG, PNG, GIF hasta 5MB</span>
+                  <div class="url-input-wrapper">
+                    <span class="url-index">{{ index + 1 }}</span>
+                    <input
+                      v-model="showcaseForm.images[index]"
+                      type="url"
+                      class="form-input url-input"
+                      :required="index === 0"
+                      placeholder="https://ejemplo.com/imagen.jpg"
+                    />
+                    <button
+                      v-if="showcaseForm.images.length > 1"
+                      type="button"
+                      class="btn-remove-url"
+                      @click="removeShowcaseImage(index)"
+                      title="Eliminar esta URL"
+                    >
+                      ✕
+                    </button>
                   </div>
-                  <div v-if="showcaseImagePreview" class="image-preview">
-                    <img :src="showcaseImagePreview" alt="Preview" />
-                    <button type="button" class="remove-image" @click.stop="removeShowcaseImage">✕</button>
+                  <div v-if="imageUrl" class="url-preview">
+                    <img :src="imageUrl" :alt="`Imagen ${index + 1}`" @error="handleShowcaseImageError(index)" />
+                    <div class="url-actions">
+                      <button
+                        type="button"
+                        class="btn-reorder"
+                        :disabled="index === 0"
+                        @click="moveShowcaseImageLeft(index)"
+                        title="Mover a la izquierda"
+                      >←</button>
+                      <button
+                        type="button"
+                        class="btn-reorder"
+                        :disabled="index === showcaseForm.images.length - 1"
+                        @click="moveShowcaseImageRight(index)"
+                        title="Mover a la derecha"
+                      >→</button>
+                    </div>
                   </div>
                 </div>
+
+                <!-- Botón para agregar más URLs -->
+                <button
+                  v-if="showcaseForm.images.length < 5"
+                  type="button"
+                  class="btn-add-url"
+                  @click="addShowcaseImageUrl"
+                >
+                  ➕ Agregar otra URL de imagen
+                </button>
               </div>
             </div>
             <div class="form-group">
@@ -783,6 +830,10 @@ const searchProducts = ref('')
 const searchCategories = ref('')
 const searchShowcase = ref('')
 const searchSales = ref('')
+
+// Variables para colores personalizados
+const customColorName = ref('')
+const customColorHex = ref('#000000')
 
 // Usar el composable de productos
 const {
@@ -910,25 +961,22 @@ const productForm = ref({
   images: [] as string[],
   category: '',
   status: 'available' as 'available' | 'out-of-stock' | 'coming-soon',
-  colors: [] as string[]
+  colors: [] as string[],
+  colorMode: 'image' as 'image' | 'selection' // 'image' = color de la imagen, 'selection' = múltiples colores
 })
 
-// Colores de Apple predeterminados
+// Colores primarios predeterminados
 const appleColors = ref([
-  { name: 'Naranja Cósmico', hex: '#ff5e00' },
-  { name: 'Azul Profundo', hex: '#003d5c' },
-  { name: 'Plata', hex: '#c0c0c0' },
-  { name: 'Azul', hex: '#1976d2' },
-  { name: 'Negro', hex: '#000000' },
-  { name: 'Blanco', hex: '#ffffff' },
-  { name: 'Azul Neblina', hex: '#a8c7dd' },
-  { name: 'Dorado Claro', hex: '#f7e7a1' },
-  { name: 'Azul Cielo', hex: '#87ceeb' },
-  { name: 'Rosa', hex: '#ff69b4' },
-  { name: 'Amarillo', hex: '#ffeb3b' },
-  { name: 'Verde', hex: '#4caf50' },
-  { name: 'Púrpura', hex: '#9c27b0' },
-  { name: 'Oro', hex: '#ffd700' }
+  { name: 'Rojo', hex: '#FF0000', isCustom: false },
+  { name: 'Azul', hex: '#0000FF', isCustom: false },
+  { name: 'Amarillo', hex: '#FFFF00', isCustom: false },
+  { name: 'Verde', hex: '#00FF00', isCustom: false },
+  { name: 'Naranja', hex: '#FFA500', isCustom: false },
+  { name: 'Morado', hex: '#800080', isCustom: false },
+  { name: 'Rosa', hex: '#FFC0CB', isCustom: false },
+  { name: 'Negro', hex: '#000000', isCustom: false },
+  { name: 'Blanco', hex: '#FFFFFF', isCustom: false },
+  { name: 'Gris', hex: '#808080', isCustom: false }
 ])
 
 const categoryForm = ref<CreateCategoryRequest>({
@@ -940,7 +988,7 @@ const showcaseForm = ref({
   name: '',
   description: '',
   price: 0,
-  image: '',
+  images: [''] as string[],
   category: ''
 })
 
@@ -949,10 +997,11 @@ const isSavingShowcase = ref(false)
 
 // Validación rápida del formulario de novedad (precio no requerido - siempre será 0)
 const showcaseFormValid = computed(() => {
+  const validImages = showcaseForm.value.images.filter(img => img.trim() !== '')
   return (
     showcaseForm.value.name.trim().length > 0 &&
     showcaseForm.value.description.trim().length > 0 &&
-    showcaseForm.value.image.trim().length > 0 &&
+    validImages.length > 0 &&
     showcaseForm.value.category.trim().length > 0
   )
 })
@@ -1043,33 +1092,40 @@ const filteredSales = computed(() => {
 
 // Helper para convertir nombres de colores a hex
 const getColorHex = (colorName: string): string => {
+  // Primero buscar en la paleta actual de colores (incluye personalizados)
+  const color = appleColors.value.find(
+    c => normalizeString(c.name) === normalizeString(colorName)
+  )
+
+  if (color) {
+    return color.hex
+  }
+
+  // Mapa de respaldo para colores comunes
   const colorMap: Record<string, string> = {
-    'naranja cósmico': '#ff5e00',
-    'naranja cosmico': '#ff5e00',
-    'azul profundo': '#003d5c',
-    'plata': '#c0c0c0',
-    'silver': '#c0c0c0',
-    'azul': '#1976d2',
-    'blue': '#1976d2',
+    'rojo': '#FF0000',
+    'red': '#FF0000',
+    'azul': '#0000FF',
+    'blue': '#0000FF',
+    'amarillo': '#FFFF00',
+    'yellow': '#FFFF00',
+    'verde': '#00FF00',
+    'green': '#00FF00',
+    'naranja': '#FFA500',
+    'orange': '#FFA500',
+    'morado': '#800080',
+    'púrpura': '#800080',
+    'purpura': '#800080',
+    'purple': '#800080',
+    'rosa': '#FFC0CB',
+    'pink': '#FFC0CB',
     'negro': '#000000',
     'black': '#000000',
-    'blanco': '#ffffff',
-    'white': '#ffffff',
-    'azul neblina': '#a8c7dd',
-    'dorado claro': '#f7e7a1',
-    'azul cielo': '#87ceeb',
-    'rosa': '#ff69b4',
-    'pink': '#ff69b4',
-    'amarillo': '#ffeb3b',
-    'yellow': '#ffeb3b',
-    'verde': '#4caf50',
-    'green': '#4caf50',
-    'púrpura': '#9c27b0',
-    'purpura': '#9c27b0',
-    'purple': '#9c27b0',
-    'morado': '#9c27b0',
-    'oro': '#ffd700',
-    'gold': '#ffd700'
+    'blanco': '#FFFFFF',
+    'white': '#FFFFFF',
+    'gris': '#808080',
+    'gray': '#808080',
+    'grey': '#808080'
   }
 
   const normalized = colorName.toLowerCase().trim()
@@ -1119,24 +1175,21 @@ const getProductsInCategory = (categoryId: string) => {
 
 const editProduct = (product: Product) => {
   editingProduct.value = product
+  const productImages = product.images && product.images.length > 0 ? [...product.images] : ['']
   productForm.value = {
     name: product.name,
     description: product.description,
     price: product.price,
     originalPrice: product.originalPrice || 0,
-    images: product.images ? [...product.images] : [],
+    images: productImages,
     category: product.category,
     status: product.status,
-    colors: product.colors ? [...product.colors] : []
+    colors: product.colors ? [...product.colors] : [],
+    colorMode: (product.colors && product.colors.length > 0) ? 'selection' : 'image'
   }
   // Configurar preview con la primera imagen si existe
-  if (product.images && product.images.length > 0) {
-    if (product.images[0].startsWith('http')) {
-      productImageUploadMethod.value = 'url'
-    } else {
-      productImageUploadMethod.value = 'file'
-    }
-    imagePreview.value = product.images[0]
+  if (productImages.length > 0 && productImages[0]) {
+    imagePreview.value = productImages[0]
   } else {
     imagePreview.value = ''
   }
@@ -1178,22 +1231,15 @@ const handleDeleteCategory = async (id: string) => {
 // Funciones para showcase products
 const editShowcaseProduct = (product: ShowcaseProduct) => {
   editingShowcaseProduct.value = product
+  // Convertir image a images array para compatibilidad
+  const productImages = product.image ? [product.image] : ['']
   showcaseForm.value = {
     name: product.name,
     description: product.description,
-    price: 5000, // Siempre 0 para novedades
-    image: product.image,
+    price: 5000,
+    images: productImages,
     category: product.category
   }
-  // Determinar el método de imagen basado en si es URL o base64
-  if (product.image.startsWith('http')) {
-    imageUploadMethod.value = 'url'
-    showcaseImagePreview.value = ''
-  } else {
-    imageUploadMethod.value = 'file'
-    showcaseImagePreview.value = product.image
-  }
-  imagePreview.value = product.image
   showShowcaseForm.value = true
 }
 
@@ -1218,21 +1264,17 @@ const saveShowcaseProduct = async () => {
   try {
     isSavingShowcase.value = true
 
-    // Asegurar que el precio siempre sea 0 para novedades
-    showcaseForm.value.price = 5000
+    // Filtrar URLs vacías
+    const cleanedImages = showcaseForm.value.images.filter(img => img.trim() !== '')
 
-    // Validación extra de URL (si se usa modo URL)
-    if (imageUploadMethod.value === 'url' && showcaseForm.value.image.startsWith('http')) {
-      const testImg = new Image()
-      const loadPromise = new Promise<void>((resolve, reject) => {
-        testImg.onload = () => resolve()
-        testImg.onerror = () => reject(new Error('No se pudo cargar la imagen proporcionada.'))
-      })
-      testImg.src = showcaseForm.value.image
-      await Promise.race([
-        loadPromise,
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Tiempo de espera al validar la imagen.')), 4000))
-      ])
+    // Asegurar que el precio siempre sea 5000 para novedades
+    // Solo usar la primera imagen para showcase (compatibilidad con backend)
+    const showcaseData = {
+      name: showcaseForm.value.name,
+      description: showcaseForm.value.description,
+      price: 5000,
+      image: cleanedImages[0] || '',
+      category: showcaseForm.value.category
     }
 
     if (editingShowcaseProduct.value) {
@@ -1242,10 +1284,10 @@ const saveShowcaseProduct = async () => {
         isSavingShowcase.value = false
         return
       }
-      await updateShowcaseProduct(editingShowcaseProduct.value.id, showcaseForm.value)
+      await updateShowcaseProduct(editingShowcaseProduct.value.id, showcaseData)
       console.log('✅ Producto showcase actualizado')
     } else {
-      await addShowcaseProduct(showcaseForm.value)
+      await addShowcaseProduct(showcaseData)
       console.log('✅ Producto showcase agregado')
     }
     closeShowcaseForm()
@@ -1268,7 +1310,7 @@ const closeShowcaseForm = () => {
     name: '',
     description: '',
     price: 0,
-    image: '',
+    images: [''],
     category: ''
   }
   // Limpiar input de archivo
@@ -1279,9 +1321,12 @@ const closeShowcaseForm = () => {
 
 // Computed para validación de formulario
 const isFormValid = computed(() => {
+  // Filtrar URLs vacías y verificar que haya al menos una URL válida
+  const validImages = productForm.value.images.filter(img => img.trim() !== '')
   return productForm.value.name.trim() !== '' &&
          productForm.value.price > 0 &&
-         productForm.value.category !== ''
+         productForm.value.category !== '' &&
+         validImages.length > 0
 })
 
 const handleMultipleFileSelect = (event: Event) => {
@@ -1338,17 +1383,28 @@ const updateImagePreview = () => {
   }
 }
 
-// removeImage eliminado (uso sustituido por removeSingleImage o reinicio manual)
+// Agregar nueva URL de imagen
+const addImageUrl = () => {
+  if (productForm.value.images.length < 5) {
+    productForm.value.images.push('')
+  }
+}
+
+// Manejar error de carga de imagen
+const handleImageError = (index: number) => {
+  console.error(`Error al cargar la imagen ${index + 1}`)
+}
 
 const removeSingleImage = (index: number) => {
   productForm.value.images.splice(index, 1)
+  // Asegurar que siempre haya al menos una URL vacía
+  if (productForm.value.images.length === 0) {
+    productForm.value.images.push('')
+  }
   if (productForm.value.images.length > 0) {
     imagePreview.value = productForm.value.images[0]
   } else {
     imagePreview.value = ''
-    if (fileInput.value) {
-      fileInput.value.value = ''
-    }
   }
 }
 
@@ -1396,17 +1452,40 @@ const handleShowcaseImageFile = (file: File) => {
   const reader = new FileReader()
   reader.onload = (e) => {
     showcaseImagePreview.value = e.target?.result as string
-    showcaseForm.value.image = e.target?.result as string
+    showcaseForm.value.images[0] = e.target?.result as string
   }
   reader.readAsDataURL(file)
 }
 
-const removeShowcaseImage = () => {
-  showcaseImagePreview.value = ''
-  showcaseForm.value.image = ''
-  if (showcaseFileInput.value) {
-    showcaseFileInput.value.value = ''
+// Funciones para manejar múltiples URLs en showcase
+const addShowcaseImageUrl = () => {
+  if (showcaseForm.value.images.length < 5) {
+    showcaseForm.value.images.push('')
   }
+}
+
+const removeShowcaseImage = (index: number) => {
+  showcaseForm.value.images.splice(index, 1)
+  // Asegurar que siempre haya al menos una URL vacía
+  if (showcaseForm.value.images.length === 0) {
+    showcaseForm.value.images.push('')
+  }
+}
+
+const moveShowcaseImageLeft = (index: number) => {
+  if (index <= 0) return
+  const imgs = showcaseForm.value.images
+  ;[imgs[index - 1], imgs[index]] = [imgs[index], imgs[index - 1]]
+}
+
+const moveShowcaseImageRight = (index: number) => {
+  const imgs = showcaseForm.value.images
+  if (index >= imgs.length - 1) return
+  ;[imgs[index + 1], imgs[index]] = [imgs[index], imgs[index + 1]]
+}
+
+const handleShowcaseImageError = (index: number) => {
+  console.error(`Error al cargar la imagen de showcase ${index + 1}`)
 }
 
 // Función auxiliar para normalizar strings (quitar tildes, espacios extra, etc.)
@@ -1445,17 +1524,86 @@ const toggleProductColor = (colorName: string) => {
   }
 }
 
+// Función para agregar un color personalizado
+const addCustomColor = () => {
+  const colorName = customColorName.value.trim()
+
+  if (!colorName) {
+    alert('Por favor ingresa un nombre para el color')
+    return
+  }
+
+  // Verificar si el color ya existe
+  const exists = appleColors.value.some(
+    color => normalizeString(color.name) === normalizeString(colorName)
+  )
+
+  if (exists) {
+    alert('Ya existe un color con ese nombre')
+    return
+  }
+
+  // Agregar el nuevo color a la lista
+  appleColors.value.push({
+    name: colorName,
+    hex: customColorHex.value,
+    isCustom: true
+  })
+
+  // Seleccionar automáticamente el color recién agregado
+  productForm.value.colors.push(colorName)
+
+  // Limpiar los campos
+  customColorName.value = ''
+  customColorHex.value = '#000000'
+
+  // Mostrar confirmación
+  console.log('✅ Color personalizado agregado:', colorName, customColorHex.value)
+}
+
+// Función para eliminar un color personalizado
+const removeCustomColor = (colorName: string) => {
+  if (confirm(`¿Estás seguro de eliminar el color "${colorName}"?`)) {
+    // Eliminar de la lista de colores disponibles
+    const index = appleColors.value.findIndex(
+      color => normalizeString(color.name) === normalizeString(colorName)
+    )
+
+    if (index > -1) {
+      appleColors.value.splice(index, 1)
+    }
+
+    // Si estaba seleccionado, también lo eliminamos de la selección
+    const selectedIndex = productForm.value.colors.findIndex(
+      c => normalizeString(c) === normalizeString(colorName)
+    )
+
+    if (selectedIndex > -1) {
+      productForm.value.colors.splice(selectedIndex, 1)
+    }
+
+    console.log('✅ Color personalizado eliminado:', colorName)
+  }
+}
+
 const saveProduct = () => {
+  // Filtrar URLs vacías antes de guardar
+  const cleanedImages = productForm.value.images.filter(img => img.trim() !== '')
+  const productData = {
+    ...productForm.value,
+    images: cleanedImages
+  }
+
   if (editingProduct.value) {
     // Actualizar producto existente - mostrar confirmación
     const confirmMessage = `¿Estás seguro de que deseas actualizar el producto "${editingProduct.value.name}"?\n\nSe actualizarán todos los cambios realizados.`
     if (!confirm(confirmMessage)) {
       return
     }
-    updateProduct(editingProduct.value.id, productForm.value)
+    updateProduct(editingProduct.value.id, productData)
   } else {
     // Crear nuevo producto
-    addProduct(productForm.value)
+    addProduct(productData)
   }
   closeProductForm()
 }
@@ -1485,10 +1633,11 @@ const closeProductForm = () => {
     description: '',
     price: 0,
     originalPrice: 0,
-    images: [],
+    images: [''], // Inicializar con una URL vacía
     category: '',
     status: 'available',
-    colors: []
+    colors: [],
+    colorMode: 'image'
   }
   if (fileInput.value) {
     fileInput.value.value = ''
@@ -1957,110 +2106,126 @@ const closeCategoryForm = () => {
 
 /* === SELECTOR DE COLORES === */
 .colors-selector {
-  margin-top: 10px;
+  margin-top: 1rem;
+  padding: 1.5rem;
+  background: linear-gradient(145deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.1));
+  border-radius: 16px;
+  border: 1px solid var(--brand-border);
 }
 
 .colors-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-  gap: 12px;
-  margin-bottom: 15px;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 
 .color-option {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 10px;
+  gap: 0.5rem;
+  padding: 0.75rem;
   border: 2px solid transparent;
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--brand-surface);
+  position: relative;
 }
 
 .color-option:hover {
-  border-color: rgba(96, 165, 250, 0.5);
-  background: rgba(96, 165, 250, 0.1);
+  transform: translateY(-4px);
+  border-color: var(--brand-accent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .color-option.selected {
-  border-color: #60a5fa;
-  background: rgba(96, 165, 250, 0.25);
-  transform: scale(1.05);
-  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+  border-color: var(--brand-success);
+  background: linear-gradient(145deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2), 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .color-option.selected .color-circle {
-  border-color: #60a5fa;
-  border-width: 3px;
-  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+  border-color: var(--brand-success);
+  border-width: 4px;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3);
+  transform: scale(1.1);
 }
 
 .color-option.selected .color-name {
-  color: #60a5fa;
+  color: var(--brand-success);
   font-weight: 700;
 }
 
 .color-circle {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3), inset 0 1px 3px rgba(255, 255, 255, 0.1);
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.3s ease;
 }
 
 .check-icon {
   font-size: 18px;
   font-weight: bold;
   color: #ffffff;
-  text-shadow: 0 0 3px rgba(0, 0, 0, 0.8), 0 1px 2px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.7), 0 0 2px rgba(255, 255, 255, 0.5);
   position: absolute;
-  animation: checkPop 0.3s ease;
+  animation: checkPop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.8));
 }
 
 @keyframes checkPop {
   0% {
-    transform: scale(0);
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
   }
   50% {
-    transform: scale(1.2);
+    transform: scale(1.3) rotate(5deg);
   }
   100% {
-    transform: scale(1);
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
   }
 }
 
 .color-name {
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--brand-primary-contrast);
   text-align: center;
-  line-height: 1.2;
+  line-height: 1.3;
+  transition: all 0.3s ease;
 }
 
 .selected-colors {
-  padding: 10px 12px;
-  background: rgba(96, 165, 250, 0.1);
-  border: 1px solid rgba(96, 165, 250, 0.3);
-  border-radius: 8px;
-  margin-top: 10px;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.08));
+  border: 2px solid rgba(16, 185, 129, 0.3);
+  border-radius: 12px;
+  margin-top: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .selected-label {
-  font-weight: 600;
-  color: #60a5fa;
-  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--brand-success);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .selected-list {
   color: var(--brand-primary-contrast);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
 /* Botones */
@@ -3088,6 +3253,143 @@ const closeCategoryForm = () => {
   margin-top: 0.5rem;
 }
 
+/* Estilos para múltiples URLs de imágenes */
+.field-hint {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.image-urls-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.image-url-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  border: 1px solid var(--brand-border);
+}
+
+.url-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.url-index {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-success);
+  color: white;
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.url-input {
+  flex: 1;
+}
+
+.btn-remove-url {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-remove-url:hover {
+  background: #dc2626;
+  transform: scale(1.1);
+}
+
+.url-preview {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--brand-border);
+}
+
+.url-preview img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid var(--brand-border);
+}
+
+.url-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-reorder {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-surface);
+  color: var(--brand-primary-contrast);
+  border: 1px solid var(--brand-border);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-reorder:hover:not(:disabled) {
+  background: var(--brand-accent);
+  transform: translateY(-2px);
+}
+
+.btn-reorder:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.btn-add-url {
+  width: 100%;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+  color: var(--brand-success);
+  border: 2px dashed var(--brand-success);
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-add-url:hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(16, 185, 129, 0.15));
+  transform: translateY(-2px);
+}
+
 .file-input {
   display: none;
 }
@@ -3367,6 +3669,213 @@ const closeCategoryForm = () => {
 
   .date {
     font-size: 0.65rem;
+  }
+}
+
+/* Color Mode Selector Styles */
+.color-mode-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.mode-btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 2px solid var(--brand-border);
+  border-radius: 12px;
+  background: var(--brand-bg-end);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.mode-btn:hover {
+  border-color: var(--brand-accent);
+  background: var(--brand-surface);
+  transform: translateY(-2px);
+}
+
+.mode-btn.active {
+  border-color: var(--brand-success);
+  background: rgba(16, 185, 129, 0.1);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.mode-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.mode-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.mode-text strong {
+  color: var(--brand-primary-contrast);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.mode-text span {
+  color: var(--brand-accent-alt);
+  font-size: 0.85rem;
+}
+
+.color-hint {
+  padding: 0.75rem 1rem;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 8px;
+  color: #60a5fa;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.color-image-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 8px;
+  border-left: 4px solid #3b82f6;
+  margin-top: 1rem;
+}
+
+.note-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.color-image-note p {
+  margin: 0;
+  color: var(--brand-primary-contrast);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Agregar color personalizado */
+.add-custom-color {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: rgba(59, 130, 246, 0.05);
+  border-radius: 10px;
+  border: 1px dashed rgba(59, 130, 246, 0.3);
+}
+
+.custom-color-inputs {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.custom-color-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.color-picker {
+  width: 60px;
+  height: 44px;
+  border: 2px solid var(--brand-border);
+  border-radius: 8px;
+  cursor: pointer;
+  background: var(--brand-bg-end);
+  transition: all 0.2s ease;
+}
+
+.color-picker:hover {
+  border-color: var(--brand-accent);
+  transform: scale(1.05);
+}
+
+.btn-add-color {
+  padding: 0.75rem 1.25rem;
+  background: var(--brand-success);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.btn-add-color:hover:not(:disabled) {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.btn-add-color:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.remove-custom-color {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.color-option {
+  position: relative;
+}
+
+.color-option:hover .remove-custom-color {
+  opacity: 1;
+}
+
+.remove-custom-color:hover {
+  background: rgba(239, 68, 68, 1);
+  transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+  .color-mode-selector {
+    grid-template-columns: 1fr;
+  }
+
+  .mode-text strong {
+    font-size: 0.9rem;
+  }
+
+  .mode-text span {
+    font-size: 0.75rem;
+  }
+
+  .custom-color-inputs {
+    flex-direction: column;
+  }
+
+  .custom-color-input {
+    width: 100%;
+  }
+
+  .btn-add-color {
+    width: 100%;
   }
 }
 </style>

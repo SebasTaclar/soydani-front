@@ -182,8 +182,8 @@
             puedes contactarnos a través de:
           </p>
           <ul>
-            <li><strong>Instagram:</strong> @appsstorepro</li>
-            <li><strong>Teléfono:</strong> +57 320 986 0099</li>
+            <li><strong>Instagram:</strong> @soydani.shop</li>
+            <li><strong>Teléfono:</strong> +57 311 5924675</li>
             <li><strong>Dirección física:</strong> Centro comercial Unilago, Bogotá - Loc. 1-124, Cra. 15 # 78 - 33, Bogotá D.C.</li>
           </ul>
           <p>
